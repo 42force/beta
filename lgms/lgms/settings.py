@@ -32,6 +32,12 @@ ALLOWED_HOSTS = [
           # # TODO: add your Google Cloud Project-ID here
           #   'trim-icon-205507.appspot.com', # must add the app engine (project-id) domain here
           #   '127.0.0.1', # for local testing
+	      #http://www.learninggardenmontessori.ph
+	      'www.learninggardenmontessori.ph',
+          'lgmsv1-08052018.appspot.com',
+          'lgmsv1-08052018',
+          #'www.learninggardenmontessori.ph',
+          '127.0.0.1',
 ]
 
 
@@ -105,15 +111,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'NAME': 'lgmsdatabase',
-        # 'USER': 'postgres',
-        # 'PASSWORD': 'postgres',
-        # # https://console.cloud.google.com/sql/instances
-        # 'HOST': '35.189.166.245',
-        # 'PORT': '5432', #at the moment of this writing google cloud postgresql is using the default postgresql port 5432
-        #
+         #'ENGINE': 'django.db.backends.postgresql.psycopg2',
+         #'NAME': 'lgmsdatabase',
+         #'USER': 'postgres',
+         #'PASSWORD': 'postgres',
+         # https://console.cloud.google.com/sql/instances
+         #'HOST': '35.189.166.245',
+         #'PORT': '5432', #at the moment of this writing google cloud postgresql is using the default postgresql port 5432
+        
 
     }
 }
@@ -156,8 +161,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 #static files for bootstrap4
-STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
-STATIC_URL = '/static/'
+#https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/students
+STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
+
+#STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
+#STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'students/media')
