@@ -4,6 +4,9 @@ entrypoint: gunicorn -b :$PORT lgms.wsgi
 
 runtime_config:
   python_version: 3
+  
+beta_settings:
+    cloud_sql_instances: trim-icon-205507:asia-east1:lgmsdatabase
 
 
 # runtime: python

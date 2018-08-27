@@ -1,192 +1,223 @@
 {% load flatpages %}
 <!doctype html>
+
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../../../favicon.ico">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="icon" href="../../../../favicon.ico">
 
 
-    {% load static %}
-    <link rel="stylesheet" href="https://use.typekit.net/hzk0rnz.css">
-    <link href="{% static 'students/css/carousel.css' %}" rel="stylesheet">
-    <!-- <link href="{% static 'students/css/customnav.css' %}" rel="stylesheet"> -->
-    <link href="{% static 'students/css/footer-with-map.css' %}" rel="stylesheet">
-    <link href="{% static 'students/css/fa.css' %}" rel="stylesheet">
-      <link href="{% static 'students/css/product.css' %}" rel="stylesheet">
+	<link rel="stylesheet" href="https://use.typekit.net/hzk0rnz.css"> {% load static %}
+	<title>{{ flatpage.title }}</title>
+	<!-- Bootstrap core CSS -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
+	{% load static %}
+	<link href="{% static 'students/css/carousel.css' %}" rel="stylesheet">
+	<link href="{% static 'students/css/fa.css' %}" rel="stylesheet">
+	<link href="{% static 'students/css/product.css' %}" rel="stylesheet">
+	<link href="{% static 'students/css/footer-with-map.css' %}" rel="stylesheet">
+	<!-- Custom styles for this template -->
 
-    <title>{{ flatpage.title }}</title>
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <!-- Custom styles for this template -->
-  </head>
-  <body>
+</head>
 
-    <header>
-      <nav class="navbar navbar-expand-md navbar fixed-top" style="background-color: #182c39;">
-        <a class="navbar-brand" href="#">
+<body>
+
+	<header>
+		<nav class="navbar navbar-expand-md navbar fixed-top" style="background-color: #182c39;">
+			<a class="navbar-brand" href="#">
           {% load static %}
           <img src="{% static 'images/lgms.png'%}" width="75" height="75" class="d-inline-block align-top" alt="">
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-          {% get_flatpages as flatpages %}
-          <ul class="navbar-nav mr-auto">
-            {% for page in flatpages %}
-            <li class="nav-item active">
-              <a  class="nav-link" href="{{ page.url }}"><span class="sr-only">(current)</span>{{ page.title }}</a>
-            </li>
-            {% endfor %}
-          </ul>
-          <form class="form-inline mt-2 mt-md-0">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><a href="{% url 'login' %}">Online Portal Access</a></button>
-          </form>
-        </div>
-      </nav>
-    </header>
+			<div class="collapse navbar-collapse" id="navbarCollapse">
+				{% get_flatpages as flatpages %}
+				<ul class="navbar-nav mr-auto">
+					{% for page in flatpages %}
+					<li class="nav-item active">
+						<a class="nav-link" href="{{ page.url }}"><span class="sr-only">(current)</span>{{ page.title }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+				<div class="btn-group">
+					<button type="button" class="btn btn-outline-success my-2 my-sm-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              ACCESS OPTIONS
+            </button>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						<a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a>
+						<a class="dropdown-item" href="{% url 'home' %}">Parents Portal</a>
+						<a class="dropdown-item" href="#">Official Page</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+	</header>
 
-    <main role="main">
-      <div id="myCarousel" class="carousel slide" data-ride="carousel">
-        <ol class="carousel-indicators">
-          <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-          <li data-target="#myCarousel" data-slide-to="1"></li>
-          <li data-target="#myCarousel" data-slide-to="2"></li>
-        </ol>
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img class="first-slide" src="{% static 'images/daughter_retouched.jpg'%}" alt="First slide">
-            <div class="container">
-              <div class="carousel-caption text-left">
-                <h1>Welome from the School Head</h1>
-                <p>Ms. Jean De Guzman</p>
-                <p><a class="btn btn-lg btn-primary" href="{% url 'signup' %}" role="button">Enroll Now</a></p>
-              </div>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img class="second-slide" src="{% static 'images/happyevent.jpg'%}" alt="Second slide">
-            <div class="container">
-              <div class="carousel-caption">
-                <h1>Buwan ng Wika</h1>
-                <p></p>
-                <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
-              </div>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img class="third-slide" src="{% static 'images/happyevent1.jpg'%}" alt="Third slide">
-            <div class="container">
-              <div class="carousel-caption text-right">
-                <h1>Family Month</h1>
-                <p>1st Quarter Parent-Teacher Conference</p>
-                <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="sr-only">Next</span>
-        </a>
-      </div>
+	<main role="main">
+	<br>
+	</br>
+	<br>
+	</br>
+		<div id="myCarousel" class="carousel slide" data-ride="carousel">
+			<ol class="carousel-indicators">
+				<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+				<li data-target="#myCarousel" data-slide-to="1"></li>
+				<li data-target="#myCarousel" data-slide-to="2"></li>
+				<li data-target="#myCarousel" data-slide-to="3"></li>
+				<li data-target="#myCarousel" data-slide-to="4"></li>
+			</ol>
+			<div class="carousel-inner">
+				<div class="carousel-item active">
+					<img class="first-slide" src="{% static 'images/daughter_retouched.jpg'%}" alt="First slide">
+					<div class="container">
+						<div class="carousel-caption text-left">
+							<h1>Welome from the School Head</h1>
+							<p>Ms. Jean De Guzman</p>
+							<p><a class="btn btn-lg btn-primary" href="{% url 'signup' %}" role="button">Enroll Now</a></p>
+						</div>
+					</div>
+				</div>
+				<div class="carousel-item">
+					<img class="second-slide" src="{% static 'images/lgms4.jpg'%}" alt="Second slide">
+					<div class="container">
+						<div class="carousel-caption">
+							<h1>Buwan ng Wika</h1>
+							<p></p>
+							<p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+						</div>
+					</div>
+				</div>
+				<div class="carousel-item">
+					<img class="third-slide" src="{% static 'images/lgms9.jpg'%}" alt="Third slide">
+					<div class="container">
+						<div class="carousel-caption text-right">
+							<h1>Family Month</h1>
+							<p>1st Quarter Parent-Teacher Conference</p>
+							<p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+						</div>
+					</div>
+				</div>
+				<div class="carousel-item">
+					<img class="fourth-slide" src="{% static 'images/lgms8.jpg'%}" alt="Third slide">
+					<div class="container">
+						<div class="carousel-caption text-right">
+							<h1>Family Day</h1>
+							<p>Highlights</p>
+							<p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+						</div>
+					</div>
+				</div>
+				<div class="carousel-item">
+					<img class="fifth-slide" src="{% static 'images/lgms5.jpg'%}" alt="Third slide">
+					<div class="container">
+						<div class="carousel-caption text-right">
+							<h1>Student - Teacher</h1>
+							<p>Welcome</p>
+							<p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a>
+			<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
+			</a>
+		</div>
+		{% block content %} {% endblock %}
 
 
-          {% block content %}
+		<!-- FOOTER -->
+		<!-- FOOTER -->
+		</div>
+		<footer id="myFooter">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-3">
+						<h5>Get started</h5>
+						<ul>
+							<li><a href="#">Home</a></li>
+							<li><a href="#">Sign up</a></li>
+							<li><a href="#">Downloads</a></li>
+						</ul>
+					</div>
+					<div class="col-sm-3">
+						<h5>About us</h5>
+						<ul>
+							<li><a href="#">Company Information</a></li>
+							<li><a href="#">Contact us</a></li>
+							<li><a href="#">Reviews</a></li>
+						</ul>
+					</div>
+					<div class="col-sm-3">
+						<h5>Support</h5>
+						<ul>
+							<li><a href="#">FAQ</a></li>
+							<li><a href="#">Help desk</a></li>
+							<li><a href="#">Forums</a></li>
+						</ul>
+					</div>
+					<div class="col-sm-3">
+						<h5>Legal</h5>
+						<ul>
+							<li><a href="#">Terms of Service</a></li>
+							<li><a href="#">Terms of Use</a></li>
+							<li><a href="#">Privacy Policy</a></li>
+						</ul>
+					</div>
+				</div>
+				<!-- Here we use the Google Embed API to show Google Maps. -->
+				<!-- In order for this to work in your project you will need to generate a unique API key.  -->
 
-          {% endblock %}
-
-
-      <!-- FOOTER -->
-      <!-- FOOTER -->
-    </div>
-        <footer id="myFooter">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-3">
-                        <h5>Get started</h5>
-                        <ul>
-                            <li><a href="#">Home</a></li>
-                            <li><a href="#">Sign up</a></li>
-                            <li><a href="#">Downloads</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-3">
-                        <h5>About us</h5>
-                        <ul>
-                            <li><a href="#">Company Information</a></li>
-                            <li><a href="#">Contact us</a></li>
-                            <li><a href="#">Reviews</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-3">
-                        <h5>Support</h5>
-                        <ul>
-                            <li><a href="#">FAQ</a></li>
-                            <li><a href="#">Help desk</a></li>
-                            <li><a href="#">Forums</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-3">
-                        <h5>Legal</h5>
-                        <ul>
-                            <li><a href="#">Terms of Service</a></li>
-                            <li><a href="#">Terms of Use</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Here we use the Google Embed API to show Google Maps. -->
-                <!-- In order for this to work in your project you will need to generate a unique API key.  -->
-                <iframe id="map-container" frameborder="0" style="border:0"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3863.513517661026!2d121.01180481500596!3d14.455176789895258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ce3dd275c431%3A0x3120fad3d13ece50!2s266+Aguirre+Ave%2C+Manila%2C+1700+Metro+Manila!5e0!3m2!1sen!2sph!4v1533988902594">
+			</div>
+			<iframe id="map-container" frameborder="0" style="border:0" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3863.513517661026!2d121.01180481500596!3d14.455176789895258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ce3dd275c431%3A0x3120fad3d13ece50!2s266+Aguirre+Ave%2C+Manila%2C+1700+Metro+Manila!5e0!3m2!1sen!2sph!4v1533988902594">
                 </iframe>
-            </div>
-            <div class="social-networks">
-                <a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
-                <a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
-                <a href="#" class="google"><i class="fa fa-google-plus"></i></a>
-            </div>
-            <div class="footer-copyright">
-                <p>© 2018 Learning Garden Montessori </p>
-            </div>
-        </footer>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+			<div class="social-networks">
+				<a href="#" class="twitter"><i class="fa fa-twitter"></i></a>
+				<a href="#" class="facebook"><i class="fa fa-facebook"></i></a>
+				<a href="#" class="google"><i class="fa fa-google-plus"></i></a>
+			</div>
+			<div class="footer-copyright">
+				<p>© 2018 Learning Garden Montessori </p>
+			</div>
+		</footer>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    </main>
+	</main>
 
-    <!-- Bootstrap core JavaScript
+	<!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+	<!-- Placed at the end of the document so the pages load faster -->
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 
-    {% load static %}
-    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-    <script src="{% static 'students/dist/js/bootstrap.min.js' %}"></script>
+	{% load static %}
+	<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+	<script src="{% static 'students/dist/js/bootstrap.min.js' %}"></script>
 
-    <script src="{% static 'students/vendor/holder.min.js' %}"></script>
+	<script src="{% static 'students/vendor/holder.min.js' %}"></script>
 
-    <!-- {% load static %}
+	<!-- {% load static %}
     <link href="{% static 'flatpages/dist/js/boostrap.min.js'%}" rel="stylesheet"> -->
 
 
-    <!-- <script src="../../dist/js/bootstrap.min.js"></script> -->
-    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-    <!-- <script src="../../assets/js/vendor/holder.min.js"></script> -->
-  </body>
+	<!-- <script src="../../dist/js/bootstrap.min.js"></script> -->
+	<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+	<!-- <script src="../../assets/js/vendor/holder.min.js"></script> -->
+</body>
 </html>

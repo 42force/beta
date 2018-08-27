@@ -18,6 +18,9 @@ from .forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm
 
 from django.contrib import messages
 
+def home(request):
+    return render(request, "students/home.html")
+
 
 
 def about(request):

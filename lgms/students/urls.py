@@ -1,4 +1,4 @@
-from django.urls import path, url
+from django.urls import path
 
 from students.views import StudentBioList, IllnessInfoCreate, IllnessInfoUpdate, IllnessInfoDelete, PresentConditionCreate, PresentConditionUpdate, PresentConditionDelete, HospitalInfoCreate, HospitalInfoUpdate, HospitalInfoDelete, AccidentInfoCreate, AccidentInfoUpdate, AccidentInfoDelete, ImmunisationInfoCreate, ImmunisationInfoUpdate, ImmunisationInfoDelete
 
@@ -6,7 +6,6 @@ from students.views import StudentBioList, IllnessInfoCreate, IllnessInfoUpdate,
 from django.contrib.flatpages import views
 from django.conf import settings
 from django.conf.urls.static import static
-
 from . import views
 
 #name can be used for reverse function
@@ -18,17 +17,8 @@ from . import views
 
 urlpatterns = [
     path('signup/', views.SignUp.as_view(), name='signup'),
-
-    path('', views.about, name='about'),
-    #this path worked
-    # path('editprofile/', views.editprofile, name='editprofile')
-#studentbio in green is the path ! remember that!
-#i need to change this to home - when i changed it became visible
-    #path('home/', views.slist, name='slist'),
-    #path('studentbio/', views.studentcheck, name='studentcheck'),
-    #this worked when i linked the studentbio and added the integer id
+    path('home/', views.home, name="home"),
     path('home/', views.studentbioid, name="studentbioid"),
-
     path('home/<int:pk>/', views.studentbioid, name="studentbioid"),
 #this is for editprofile
     path('editprofile/', views.editprofile, name='editprofile'),
@@ -63,9 +53,6 @@ urlpatterns = [
     path('immunisationinfo/add/', ImmunisationInfoCreate.as_view(), name='immunisationinfo-add'),
     path('immunisationinfo/<int:pk>/', ImmunisationInfoUpdate.as_view(), name='immunisationinfo-update'),
     path('immunisationinfo/<int:pk>/delete/', ImmunisationInfoDelete.as_view(), name='immunisationinfo-delete'),
-
-    url(r'^about/$', views.flatpage, {'url': '/about/'}, name='about'),
-    url(r'^official/$', views.flatpage, {'url': '/official/'}, name='official'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
