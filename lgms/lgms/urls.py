@@ -23,7 +23,7 @@ from students.admin import students_admin_site
 urlpatterns = [
 
     path('', TemplateView.as_view(template_name='flatpages/about.html'), name='about'),
-    path('', TemplateView.as_view(template_name='students/home.html'), name='home'),
+    #path('', TemplateView.as_view(template_name='students/home.html'), name='home'),
     path('admin/', admin.site.urls),
     path('students-admin', students_admin_site.urls),
     path('', include('students.urls')),

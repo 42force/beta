@@ -18,13 +18,9 @@ from . import views
 
 urlpatterns = [
     path('signup/', views.SignUp.as_view(), name='signup'),
-    #this path worked
-    # path('editprofile/', views.editprofile, name='editprofile')
-#studentbio in green is the path ! remember that!
-#i need to change this to home - when i changed it became visible
-    #path('home/', views.slist, name='slist'),
-    #path('studentbio/', views.studentcheck, name='studentcheck'),
-    #this worked when i linked the studentbio and added the integer id
+
+    path('home/', views.home, name="home"),
+    
     path('home/', views.studentbioid, name="studentbioid"),
 
     path('home/<int:pk>/', views.studentbioid, name="studentbioid"),
