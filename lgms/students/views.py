@@ -19,6 +19,11 @@ from .forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm
 from django.contrib import messages
 
 
+
+def about(request):
+    return render(request, 'flatpages/about.html')
+
+
 def slist(request):
 
     context = {

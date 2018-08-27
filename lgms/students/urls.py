@@ -18,6 +18,8 @@ from . import views
 
 urlpatterns = [
     path('signup/', views.SignUp.as_view(), name='signup'),
+
+    path('', views.about, name='about'),
     #this path worked
     # path('editprofile/', views.editprofile, name='editprofile')
 #studentbio in green is the path ! remember that!
