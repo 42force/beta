@@ -19,6 +19,7 @@ from . import views
 urlpatterns = [
     path('signup/', views.SignUp.as_view(), name='signup'),
 
+<<<<<<< HEAD
     path('', views.about, name='about'),
     #this path worked
     # path('editprofile/', views.editprofile, name='editprofile')
@@ -27,6 +28,10 @@ urlpatterns = [
     #path('home/', views.slist, name='slist'),
     #path('studentbio/', views.studentcheck, name='studentcheck'),
     #this worked when i linked the studentbio and added the integer id
+=======
+    path('home/', views.home, name="home"),
+    
+>>>>>>> 0d97f62ad20a1b82735966b95c01b25622f3db04
     path('home/', views.studentbioid, name="studentbioid"),
 
     path('home/<int:pk>/', views.studentbioid, name="studentbioid"),
