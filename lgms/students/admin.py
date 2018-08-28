@@ -3,6 +3,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin import AdminSite
 
+#this is for the sum computation
+import easy
+
+
 #for flatpage
 
 # from django.contrib.flatpages.admin import FlatPageAdmin
@@ -99,10 +103,17 @@ class CharacterObservationAdmin(admin.ModelAdmin):
     list_filter = ['observegrades']
 
 class StatementAccountAdmin(admin.ModelAdmin):
-    list_display =['studentname', 'gradeyear', 'modeofpayment', 'modeofpaymentprice', 'modeofpaymenttotal', 'musicclassprice', 'bookspricetotal', 'notebooks', 'uniforms', 'other', 'totalprice', 'reservationfee', 'discount', 'gtotal']
-    fields =['studentname', 'gradeyear', 'modeofpayment',  'modeofpaymentprice', 'modeofpaymenttotal', 'musicclassprice', 'bookspricetotal', 'notebooks', 'uniforms', 'other','totalprice', 'reservationfee', 'discount','gtotal']
+    list_display =['studentname', 'gradeyear', 'modeofpayment', 'modeofpaymentprice', 'modeofpaymenttotal', 'musicclassprice', 'bookspricetotal', 'notebooks', 'uniforms', 'other', 'totalprice', 'reservationfee', 'discount', 'gtotal', 'grandtotal']
+    fields =['studentname', 'gradeyear', 'modeofpayment',  'modeofpaymentprice', 'modeofpaymenttotal', 'musicclassprice', 'bookspricetotal', 'notebooks', 'uniforms', 'other','totalprice', 'reservationfee', 'discount','gtotal', 'grandtotal']
     search_fields = ['studentname__studentname']
     list_filter = ['studentname',]
+
+    @easy.smart(short_description="Total Price Sum", admin_order_field='musicclassprice', allow_tags=True)
+    def grandtotal(self, obj):
+        sum_result = obj.musicclassprice + obj.bookspricetotal + obj.notebooks + obj.uniforms + obj.other + obj.totalprice
+        + obj.reservationfee + obj.discount
+        return sum_result
+
 
 
 class ComputeAdmin(admin.ModelAdmin):

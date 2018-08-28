@@ -39,7 +39,8 @@ class CustomUser(AbstractUser):
     profilepic = models.ImageField('Profile Picture',upload_to='profile_image', blank=True)
     studentbioidinfo = models.ForeignKey('StudentBio', max_length=10, on_delete=models.CASCADE, blank=False, null=True)
     studentgradesinfo = models.ForeignKey('StudentGrades', max_length=64, on_delete=models.CASCADE, blank=False, null=True)
-    
+
+
     typeofapplication = {
 
         ('CASA PROGRAM', 'CASA Program'),
@@ -372,6 +373,7 @@ class StudentBio(models.Model):
     profilepic = models.ImageField('Student Profile Picture',upload_to='profile_image', blank=True)
     #test to connect to financial statement of account - still need to modify table starting from here..
     financialinfo = models.ForeignKey('StatementAccount', verbose_name="Statement of Account", on_delete=models.CASCADE, max_length=64, blank=True, null=True)
+    profpicimage = models.ImageField('Student Profile Picture',upload_to='profile_image', blank=True)
 
     class Meta:
         verbose_name_plural = "Student Profile"
@@ -471,6 +473,7 @@ class StatementAccount(models.Model):
         #     return self.modeofpayment + self.modeofpaymenttotal
 
         modeofpaymentprice = MoneyField('Mode of Payment Price', max_digits=20, decimal_places=4, default_currency='PHP')
+        ###this is where the money ###
         musicclassprice = MoneyField('Music Class Price', max_digits=20, decimal_places=4, default_currency='PHP')
         bookspricetotal = MoneyField('Books Price Total', max_digits=20, decimal_places=4, default_currency='PHP')
         notebooks = MoneyField('Notebook Price', max_digits=20, decimal_places=4, default_currency='PHP')

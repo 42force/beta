@@ -65,7 +65,7 @@ def studentbioid(request, pk):
     }
     #return render(request, "students/.html", context)
     #original code
-    return render(request, "students/portal.html", context)
+    return render(request, "students/home.html", context)
 
 
 class SignUp(generic.CreateView):
