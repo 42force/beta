@@ -1,4 +1,4 @@
-from django.urls import path, url
+from django.urls import path
 
 from students.views import StudentBioList, IllnessInfoCreate, IllnessInfoUpdate, IllnessInfoDelete, PresentConditionCreate, PresentConditionUpdate, PresentConditionDelete, HospitalInfoCreate, HospitalInfoUpdate, HospitalInfoDelete, AccidentInfoCreate, AccidentInfoUpdate, AccidentInfoDelete, ImmunisationInfoCreate, ImmunisationInfoUpdate, ImmunisationInfoDelete
 
@@ -57,9 +57,6 @@ urlpatterns = [
     path('immunisationinfo/add/', ImmunisationInfoCreate.as_view(), name='immunisationinfo-add'),
     path('immunisationinfo/<int:pk>/', ImmunisationInfoUpdate.as_view(), name='immunisationinfo-update'),
     path('immunisationinfo/<int:pk>/delete/', ImmunisationInfoDelete.as_view(), name='immunisationinfo-delete'),
-
-    url(r'^about/$', views.flatpage, {'url': '/about/'}, name='about'),
-    url(r'^official/$', views.flatpage, {'url': '/official/'}, name='official'),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
