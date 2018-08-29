@@ -18,14 +18,37 @@ from .forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm
 
 from django.contrib import messages
 
+#################this is for the download ############################
+import os
+from django.conf import settings
+from django.http import HttpResponse
+
+#############################################
+
+def download(request, path):
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/vnd.msword")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+            return response
+    raise Http404
+
+#############################################
+
+
 def home(request):
     return render(request, "students/home.html")
-
-
-
+##############flat pages url views code###############################
 def about(request):
     return render(request, 'flatpages/about.html')
 
+def news(request):
+    return render(request, 'flatpages/news.html')
+
+def admission(request):
+    return render(request, 'flatpages/admission.html')
+##############flat pages url views code###############################
 
 def slist(request):
 

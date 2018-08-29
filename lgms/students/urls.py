@@ -17,7 +17,13 @@ from . import views
 
 urlpatterns = [
     path('signup/', views.SignUp.as_view(), name='signup'),
+    #this is for flapages url start
     path('home/', views.home, name="home"),
+    path('news/', views.news, name="news"),
+    path('admission/', views.admission, name="admission"),
+    #this is for flapages url end
+
+    path('download/' views.download {'document root': settings.MEDIA_ROOT}),
     path('home/', views.studentbioid, name="studentbioid"),
     path('home/<int:pk>/', views.studentbioid, name="studentbioid"),
 #this is for editprofile
@@ -53,7 +59,6 @@ urlpatterns = [
     path('immunisationinfo/add/', ImmunisationInfoCreate.as_view(), name='immunisationinfo-add'),
     path('immunisationinfo/<int:pk>/', ImmunisationInfoUpdate.as_view(), name='immunisationinfo-update'),
     path('immunisationinfo/<int:pk>/delete/', ImmunisationInfoDelete.as_view(), name='immunisationinfo-delete'),
-
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

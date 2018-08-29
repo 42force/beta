@@ -467,27 +467,52 @@ class StatementAccount(models.Model):
         modeofpayment = models.CharField('Mode of Payment', choices=term, default="A", max_length=64, help_text="Choose Terms of Payment")
         modeofpaymenttotal = models.IntegerField('Mode Payment Total', default="1234")
 
-
-        #
         # def getterms(self):
         #     return self.modeofpayment + self.modeofpaymenttotal
 
-        modeofpaymentprice = MoneyField('Mode of Payment Price', max_digits=20, decimal_places=4, default_currency='PHP')
+        ### will try to edit from MoneyField to DecimalF or Integer###
+
+        modeofpaymentprice = models.DecimalField('Mode of Payment Price', max_digits=20, decimal_places=4)
         ###this is where the money ###
-        musicclassprice = MoneyField('Music Class Price', max_digits=20, decimal_places=4, default_currency='PHP')
-        bookspricetotal = MoneyField('Books Price Total', max_digits=20, decimal_places=4, default_currency='PHP')
-        notebooks = MoneyField('Notebook Price', max_digits=20, decimal_places=4, default_currency='PHP')
-        uniforms = MoneyField('Uniform Price',max_digits=20, decimal_places=4, default_currency='PHP')
-        other = MoneyField('Miscellaneous & Others', max_digits=20, decimal_places=4, default_currency='PHP')
+        musicclassprice = models.DecimalField('Music Class Price', max_digits=20, decimal_places=4 )
+        bookspricetotal = models.DecimalField('Books Price Total', max_digits=20, decimal_places=4)
+        notebooks = models.DecimalField('Notebook Price', max_digits=20, decimal_places=4)
+        uniforms = models.DecimalField('Uniform Price',max_digits=20, decimal_places=4)
+        other = models.DecimalField('Miscellaneous & Others', max_digits=20, decimal_places=4)
+
 
         # def computetotal(self):
         #     return self.musicclassprice + self.bookspricetotal + self.notebooks + self.uniforms + self.other
 
         totalprice = models.IntegerField('Total Payment Price', default="1234")
 
-        reservationfee = MoneyField('Reservation Fee', max_digits=20, decimal_places=4, default_currency='PHP')
-        discount = MoneyField('Discount Fee', max_digits=20, decimal_places=4, default_currency='PHP')
-        gtotal = models.IntegerField('Grand Total Price', default="1234")
+        reservationfee = models.DecimalField('Reservation Fee', max_digits=20, decimal_places=4)
+        discount = models.DecimalField('Discount Fee', max_digits=20, decimal_places=4)
+        gtotal = models.IntegerField(default="0")
+
+
+
+        # def gettotal(self):
+        #     StatementAccount.objects.all().aggregate(Sum("Total Price", gtotal=IntegerField()))
+
+        ### will try to edit from MoneyField to DecimalF or Integer end ###
+
+        # modeofpaymentprice = MoneyField('Mode of Payment Price', max_digits=20, decimal_places=4, default_currency='PHP')
+        # ###this is where the money ###
+        # musicclassprice = MoneyField('Music Class Price', max_digits=20, decimal_places=4, default_currency='PHP')
+        # bookspricetotal = MoneyField('Books Price Total', max_digits=20, decimal_places=4, default_currency='PHP')
+        # notebooks = MoneyField('Notebook Price', max_digits=20, decimal_places=4, default_currency='PHP')
+        # uniforms = MoneyField('Uniform Price',max_digits=20, decimal_places=4, default_currency='PHP')
+        # other = MoneyField('Miscellaneous & Others', max_digits=20, decimal_places=4, default_currency='PHP')
+        #
+        # # def computetotal(self):
+        # #     return self.musicclassprice + self.bookspricetotal + self.notebooks + self.uniforms + self.other
+        #
+        # totalprice = models.IntegerField('Total Payment Price', default="1234")
+        #
+        # reservationfee = MoneyField('Reservation Fee', max_digits=20, decimal_places=4, default_currency='PHP')
+        # discount = MoneyField('Discount Fee', max_digits=20, decimal_places=4, default_currency='PHP')
+        # gtotal = models.IntegerField('Grand Total Price', default="1234")
 
         # def calculate():
 
