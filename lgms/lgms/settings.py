@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'phonenumber_field',
     'star_ratings',
-    'djmoney'
+    'djmoney',
+	'easy',
 ]
 
 AUTH_USER_MODEL ='students.CustomUser'
@@ -118,7 +119,7 @@ DATABASES = {
          # https://console.cloud.google.com/sql/instances
          #'HOST': '35.189.166.245',
          #'PORT': '5432', #at the moment of this writing google cloud postgresql is using the default postgresql port 5432
-        
+
 
     }
 }

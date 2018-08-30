@@ -3,6 +3,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin import AdminSite
 
+#this is for the sum computation
+import easy
+
+
+from django.db.models import Avg, Max, Sum, Min
 #for flatpage
 
 # from django.contrib.flatpages.admin import FlatPageAdmin
@@ -103,6 +108,22 @@ class StatementAccountAdmin(admin.ModelAdmin):
     fields =['studentname', 'gradeyear', 'modeofpayment',  'modeofpaymentprice', 'modeofpaymenttotal', 'musicclassprice', 'bookspricetotal', 'notebooks', 'uniforms', 'other','totalprice', 'reservationfee', 'discount','gtotal']
     search_fields = ['studentname__studentname']
     list_filter = ['studentname',]
+    list_summary = ('Total price', Sum('musicclassprice', 'booksprice', 'uniforms', 'notebooks','other', 'reservationfee'))
+
+    # def get_queryset(self, request):
+    #     return super(StatementAccountAdmin, self).get_queryset(request).annotate(
+    #     musicclassprice=Sum('music_price'),
+    #     bookspricetotal=Sum('books_price'))
+
+        #totaltest = StatementAccount.objects.all().aggregate(Sum("Total Price", gtotal=IntegerField()))
+
+
+    # @easy.smart(short_description="Total Price Sum", admin_order_field='musicclassprice', allow_tags=True)
+    # def gtotal(self, obj):
+    #     sum_result = obj.musicclassprice + obj.bookspricetotal + obj.notebooks + obj.uniforms + obj.other
+    #     + obj.reservationfee + obj.discount
+    #     return '<b>%s</b>' % sum_result
+
 
 
 class ComputeAdmin(admin.ModelAdmin):
