@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'star_ratings',
     'djmoney',
-	'easy',
+
 ]
 
 AUTH_USER_MODEL ='students.CustomUser'
@@ -164,9 +164,9 @@ USE_TZ = True
 #static files for bootstrap4
 #this is if uploaded in google console platform
 #https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/students
-#STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
+STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
 
-STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
+#STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'students/media')

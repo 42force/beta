@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin import AdminSite
 
 #this is for the sum computation
-import easy
+
 
 
 from django.db.models import Avg, Max, Sum, Min
