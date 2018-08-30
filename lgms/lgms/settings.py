@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rc=^m)&jx)02&dp-6r1&99e@2rq7$sd1a3e^2twan-(e92l#=h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 # from tutorial DEBUG = os.environ['DEBUG'] == 'True' # environment vars are strings. "convert" to boolean. lol, Python
 
 
@@ -164,9 +164,15 @@ USE_TZ = True
 #static files for bootstrap4
 #this is if uploaded in google console platform
 #https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/students
+<<<<<<< HEAD
 #STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
 STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/lgms/static'
 #STATIC_ROOT = 'static'
+=======
+STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
+
+#STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
+>>>>>>> c79f2458a6d1958cd0d6754e8c4e34a996a47b97
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'students/media')

@@ -63,6 +63,10 @@ urlpatterns = [
     path('immunisationinfo/<int:pk>/', ImmunisationInfoUpdate.as_view(), name='immunisationinfo-update'),
     path('immunisationinfo/<int:pk>/delete/', ImmunisationInfoDelete.as_view(), name='immunisationinfo-delete'),
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5e6b5b9946fdf57a8ade26aa4d82fa8463acbf3f
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
