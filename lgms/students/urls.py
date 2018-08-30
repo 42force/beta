@@ -23,7 +23,7 @@ urlpatterns = [
     path('admission/', views.admission, name="admission"),
     #this is for flapages url end
 
-    path('download/' views.download {'document root': settings.MEDIA_ROOT}),
+    path('download/', views.download, {'document root': settings.MEDIA_ROOT}),
     path('home/', views.studentbioid, name="studentbioid"),
     path('home/<int:pk>/', views.studentbioid, name="studentbioid"),
 #this is for editprofile
