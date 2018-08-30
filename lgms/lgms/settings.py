@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'star_ratings',
     'djmoney',
-	'easy',
+
 ]
 
 AUTH_USER_MODEL ='students.CustomUser'
@@ -165,15 +165,15 @@ USE_TZ = True
 #this is if uploaded in google console platform
 #https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/students
 #STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
-
-STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
+STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/lgms/static'
+#STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'students/media')
 
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'students/static'),
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
