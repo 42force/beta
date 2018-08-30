@@ -21,9 +21,12 @@ urlpatterns = [
     path('home/', views.home, name="home"),
     path('news/', views.news, name="news"),
     path('admission/', views.admission, name="admission"),
+    path('gallery/', views.gallery, name="gallery"),
+    #this is for flapages url end
+    #this is for the download part
+    path('casaview/', views.casaview, name="casaview"),
     #this is for flapages url end
 
-    path('download/' views.download {'document root': settings.MEDIA_ROOT}),
     path('home/', views.studentbioid, name="studentbioid"),
     path('home/<int:pk>/', views.studentbioid, name="studentbioid"),
 #this is for editprofile

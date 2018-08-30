@@ -5,34 +5,8 @@
 <div class="container marketing">
   <hr class="featurette-divider">
 
-  <!-- Three columns of text below the carousel -->
-<<<<<<< HEAD
-        <div class="row">
-          <div class="col-lg-4">
-            <span class="fa-stack fa-4x">
-              <i class="fa fa-map-marker fa-stack-2x icon-background green"></i>
-            </span>
-            <h2>Location</h2>
-            <p>266 Aguirre Avenue , BF Homes Paranaque City</p>
 
-          </div><!-- /.col-lg-4 -->
-          <div class="col-lg-4">
-            <span class="fa-stack fa-4x">
-              <i class="fa fa-phone fa-stack-2x icon-background green"></i>
-            </span>
-            <h2>Contact Numbers</h2>
-            <p>+ 632 8204064</p>
-            <p>+ 632 7030662</p>
-          </div><!-- /.col-lg-4 -->
-          <div class="col-lg-4">
-            <span class="fa-stack fa-4x">
-              <i class="fa fa-envelope fa-stack-2x icon-background green"></i>
-            </span>
-            <h2>Email Address</h2>
-            <p>lrng_garden_montessori@yahoo.com.ph</p>
-          </div><!-- /.col-lg-4 -->
-        </div><!-- /.row -->
-=======
+  <!-- Three columns of text below the carousel -->
   <div class="row justify-content-md-center">
 
     <!-- test modal -->
@@ -55,12 +29,11 @@
               </button>
             </div>
             <div class="modal-body">
-              <p><a href="#" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">CASA Application Form</a></p>
-              <p><a href="#" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Grade School Application Form</a></p>
-              <p><a href="#" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Grade Student Recommendation Form</a></p>
-              <p><a href="#" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">High School Recommendation Forms</a></p>
-              <p><a href="#" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Hiring Application Forms</a></p>
-
+              <p><a href="{% url 'casaview' %}" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">CASA Application Form</a></p>
+              <p><a href="/media/forms{{ gsform.doc }}" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Grade School Application Form</a></p>
+              <p><a href="/media/forms{{ gsrecom.doc }}" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Grade Student Recommendation Form</a></p>
+              <p><a href="/media/forms{{ hsrecom.doc }}" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">High School Recommendation Forms</a></p>
+              <p><a href="/media/forms{{ hiring.docx }}" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Hiring Application Forms</a></p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
@@ -72,9 +45,300 @@
     </div><!-- /.col-lg-4 -->
     <div id="contact" class="col-lg-4">
       <span class="fa-stack fa-4x">
-              <a href="https://goo.gl/maps/artpiuF9uPv"><i class="fa fa-map-marker fa-stack-2x icon-background green"></i></a>
+        <a href="#" data-toggle="modal" data-target="#mapModalCenter">
+              <i class="fa fa-map-marker fa-stack-2x icon-background green"></i></a>
                 </span>
       <h2>Location</h2>
+      <!-- this is for map container -->
+      <div class="modal fade" id="mapModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title" id="exampleModalLongTitle">LGMS LOCATION</h1>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <iframe id="map-container" frameborder="0" style="border:0" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3863.513517661026!2d121.01180481500596!3d14.455176789895258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ce3dd275c431%3A0x3120fad3d13ece50!2s266+Aguirre+Ave%2C+Manila%2C+1700+Metro+Manila!5e0!3m2!1sen!2sph!4v1533988902594">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      	      </iframe>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- this is end of map container modal -->
     </div><!-- /.col-lg-4 -->
     <div class="col-lg-4">
       <span class="fa-stack fa-4x">
@@ -94,8 +358,8 @@
     </div><!-- /.col-lg-4 -->
   </div><!-- /.row -->
   <hr class="featurette-divider">
-
->>>>>>> 5e6b5b9946fdf57a8ade26aa4d82fa8463acbf3f
+  <h1 class="display-2 text-center">Admission Process</h1>
+  <hr class="featurette-divider">
   <!-- equal row new students  -->
   <div class="container">
     <div class="row">

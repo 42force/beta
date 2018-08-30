@@ -162,12 +162,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 #static files for bootstrap4
+#this is if uploaded in google console platform
 #https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/students
-STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
+#STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
 
-#STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
-#STATIC_URL = '/static/'
-
+STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'students/media')
 

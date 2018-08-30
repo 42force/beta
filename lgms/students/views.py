@@ -19,23 +19,31 @@ from .forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm
 from django.contrib import messages
 
 #################this is for the download ############################
-import os
-from django.conf import settings
-from django.http import HttpResponse
+import io
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
+
+def casaview(request):
+    with open('students/media/forms/casaform.pdf', 'r') as pdf:
+        response = HttpResponse(pdf.read(), contenttype='application/pdf')
+        response['Content-Disposition'] = 'inline;filename=casaform.pdf'
+        return response
+    pdf.closed
 
 #############################################
 
-def download(request, path):
-    file_path = os.path.join(settings.MEDIA_ROOT, path)
-    if os.path.exists(file_path):
-        with open(file_path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type="application/vnd.msword")
-            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
-            return response
-    raise Http404
+def casa_view(request):
+    buffer = io.BytesIO()
 
+    p = Canvas.Canvas(buffer)
+
+    p.drawString(100,100, "Hello There")
+
+    p.showPage()
+    p.save()
+
+    return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
 #############################################
-
 
 def home(request):
     return render(request, "students/home.html")
@@ -48,6 +56,9 @@ def news(request):
 
 def admission(request):
     return render(request, 'flatpages/admission.html')
+
+def gallery(request):
+    return render(request, 'flatpages/gallery.html')
 ##############flat pages url views code###############################
 
 def slist(request):
