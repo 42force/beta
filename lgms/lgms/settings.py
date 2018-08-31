@@ -164,22 +164,20 @@ USE_TZ = True
 #static files for bootstrap4
 #this is if uploaded in google console platform
 #https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/students
-<<<<<<< HEAD
 #STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
 STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/lgms/static'
 #STATIC_ROOT = 'static'
-=======
-STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
+#STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
 
 #STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
->>>>>>> c79f2458a6d1958cd0d6754e8c4e34a996a47b97
+
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'students/media')
 
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'students/static'),
+    os.path.join(BASE_DIR, 'static'),
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
