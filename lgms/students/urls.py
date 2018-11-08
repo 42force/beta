@@ -7,7 +7,9 @@ from django.contrib.flatpages import views
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from django.contrib.auth import views as auth_views
 
+from django.conf.urls import url
 #name can be used for reverse function
 # commented out from airline example
 # path("<int:flight_id>", views.flight, name="flight"),
@@ -16,7 +18,21 @@ from . import views
 # http://127.0.0.1:8000/home/8/
 
 urlpatterns = [
-    path('signup/', views.SignUp.as_view(), name='signup'),
+
+    #test for the downloadview
+
+    #test for the downloadview
+    #path('home/', views.SignUp.as_view(), name='signup'),
+
+    #experiment of putting login to home.html
+    #path('accounts/login', auth_views.LoginView.as_view(template_name='students/home.html')),
+
+    #this is a test for customising direction for login and signup form
+    path('home', views.login_form, name='login_form'),
+    path('home', views.signup_form, name='signup_form'),
+
+    # path('signup/parents/', views.StudentSignupView.as_view(), name='signup_parents'),
+    # path('signup/teachers/', views.TeachersSignupView.as_view(), name='signup_teachers'),
     #this is for flapages url start
     path('home/', views.home, name="home"),
     path('news/', views.news, name="news"),
@@ -24,11 +40,10 @@ urlpatterns = [
     path('gallery/', views.gallery, name="gallery"),
     #this is for flapages url end
     #this is for the download part
-    path('casaview/', views.casaview, name="casaview"),
     #this is for flapages url end
 
-    path('home/', views.studentbioid, name="studentbioid"),
-    path('home/<int:pk>/', views.studentbioid, name="studentbioid"),
+    path('portal/', views.studentbioid, name="studentbioid"),
+    path('portal/<int:pk>/', views.studentbioid, name="studentbioid"),
 #this is for editprofile
     path('editprofile/', views.editprofile, name='editprofile'),
 

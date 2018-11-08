@@ -8,9 +8,6 @@ from django.contrib.auth.models import User
 from django.forms import ModelForm
 
 
-
-
-
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = CustomUser
@@ -20,6 +17,15 @@ class CustomUserCreationForm(UserCreationForm):
             (None, {'fields': ('email', 'password')}),
             ('Personal info', {'email': ('studentname',)}),
         )
+
+
+class CustomUserForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password',)
+
+
+
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:

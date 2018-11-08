@@ -25,6 +25,16 @@ class CustomUserManager(models.Manager):
     pass
 
 class CustomUser(AbstractUser):
+
+    # user_type_choices = {
+    # (1, 'Parents' ),
+    # (2, 'Teacher' ),
+    # (3, 'Admin'),
+    #
+    # }
+    # user_type = models.PositiveSmallIntegerField(choices=user_type_choices, help_text='Choose User Role')
+
+    ### this is for the user choices
     name = models.CharField('Mothers Complete Name', blank=True, max_length=64)
     fathersname = models.CharField('Fathers Complete Name', blank=True, max_length=64)
     guardiansname = models.CharField('Guardians Complete Name', blank=True, max_length=64)
@@ -39,7 +49,6 @@ class CustomUser(AbstractUser):
     profilepic = models.ImageField('Profile Picture',upload_to='profile_image', blank=True)
     studentbioidinfo = models.ForeignKey('StudentBio', max_length=10, on_delete=models.CASCADE, blank=False, null=True)
     studentgradesinfo = models.ForeignKey('StudentGrades', max_length=64, on_delete=models.CASCADE, blank=False, null=True)
-
 
     typeofapplication = {
 
@@ -112,27 +121,28 @@ class Students(models.Model):
     studentname = models.CharField('Student Name', max_length=64)
     student_id = models.IntegerField('Student ID')
     birthday = models.DateField('Date of Birth', default=date.today)
+    lrn_no = models.CharField('Learners Number', max_length=64)
 
     groupchoice = {
 
         ('CASA AM', 'CM'),
-        ( 'TEACH AM', 'TEA'),
-        ( 'TEACH PM', 'TEP'),
-        ( 'TEACH PM GRADE 1', 'TEP=GR1'),
-        ( 'TEACH PM GRADE 2', 'TEP-GR2'),
-        ( 'TEACH PM GRADE 3', 'TEP-GR3'),
+        ( 'TEACHAM', 'TEA'),
+        ( 'TEACHPM', 'TEP'),
+        ( 'TEACHPM GRADE1', 'TEP=GR1'),
+        ( 'TEACHPM GRADE2', 'TEP-GR2'),
+        ( 'TEACHPM GRADE3', 'TEP-GR3'),
         ( 'PLAY GROUP', 'PG'),
         ( 'CASA AFTERNOON 1:30', 'CA'),
-        ( 'GRADE 1', 'G1'),
-        ( 'GRADE 2', 'G2'),
-        ( 'GRADE 3', 'G3'),
-        ( 'GRADE 4', 'G4'),
-        ( 'GRADE 5', 'G5'),
-        ( 'GRADE 6', 'G6'),
-        ( 'GRADE 7', 'G7'),
-        ( 'GRADE 8', 'G8'),
-        ( 'GRADE 9', 'G9'),
-        ( 'GRADE 10', 'G10')
+        ( 'GRADE1', 'G1'),
+        ( 'GRADE2', 'G2'),
+        ( 'GRADE3', 'G3'),
+        ( 'GRADE4', 'G4'),
+        ( 'GRADE5', 'G5'),
+        ( 'GRADE6', 'G6'),
+        ( 'GRADE7', 'G7'),
+        ( 'GRADE8', 'G8'),
+        ( 'GRADE9', 'G9'),
+        ( 'GRADE10', 'G10')
 
 
     }
@@ -144,10 +154,10 @@ class Students(models.Model):
     def __str__(self):
         return '%s' % (self.studentname)
 
-class Teachers(models.Model):
-    teachersname = models.CharField('Teachers Name', max_length=64)
+class Faculty(models.Model):
+    facultyname = models.CharField('Faculty Name', max_length=64)
     email = models.EmailField('Email Address', max_length=64,default='example@email.com')
-    teachers_id = models.IntegerField('Teachers ID No.', default="1234")
+    faculty_id = models.IntegerField('Faculty ID No.', default="1234")
     birthday = models.DateField('Date of Birth', default=date.today)
 
     groupinfo = {
@@ -366,7 +376,7 @@ class StudentBio(models.Model):
     popsname = models.CharField('Fathers Name', max_length=64, blank=True)
     guardiansname = models.CharField('Guardians Name', max_length=64, blank=True)
     gradeyear = models.ForeignKey('GradeYear', max_length=30, on_delete=models.CASCADE, related_name="gradeyear_gradeyear", verbose_name="Grade Year")
-    teachersname = models.ManyToManyField('Teachers', verbose_name="Teachers Name")
+    facultyname= models.ManyToManyField('Faculty', verbose_name="Faculty Assigned")
     #we might omit this.
     subjects = models.ManyToManyField('Subjects', verbose_name="List of Subjects", related_name="subjectslist")
     charactersets = models.ManyToManyField('CharacterBuildingActivities', verbose_name="Character Sets")
@@ -388,7 +398,7 @@ class StudentBio(models.Model):
 class StudentGrades(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, max_length=64, on_delete=models.CASCADE, blank=False, null=True)
     studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, verbose_name="Student Name")
-    teachersname = models.ForeignKey('Teachers', max_length=64, on_delete=models.CASCADE, verbose_name=" Teachers Name")
+    facultyname = models.ForeignKey('Faculty', max_length=64, on_delete=models.CASCADE, verbose_name=" Teachers Name")
     subjectname = models.ForeignKey('Subjects', max_length=64, on_delete=models.CASCADE, verbose_name="Subject Name")
 
     grade = {
@@ -448,10 +458,10 @@ class CharacterObservation(models.Model):
         verbose_name_plural = "PAGUNLAD SA TAGLAY NA MGA PAGPAPAHALAGA AT SALOOBIN LISTS"
 
 
-class TestRating(AbstractBaseRating):
-    #studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, verbose_name="Student Name")
-    foo = models.CharField(max_length=64)
-    #observationsets = models.ForeignKey('ObservationLists', max_length=64, on_delete=models.CASCADE, verbose_name=" Character Activities")
+# class TestRating(AbstractBaseRating):
+#     #studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, verbose_name="Student Name")
+#     foo = models.CharField(max_length=64)
+#     #observationsets = models.ForeignKey('ObservationLists', max_length=64, on_delete=models.CASCADE, verbose_name=" Character Activities")
 
 
 class StatementAccount(models.Model):
@@ -542,6 +552,10 @@ class Compute(models.Model):
                 verbose_name_plural = "Computation Test Only"
 
 
+
+class Document(models.Model):
+    slug = models.SlugField()
+    file = models.FileField(upload_to='object')
 
 # class CharacterTagalogRatings(models.Model):
 #     studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, verbose_name="Student Name"

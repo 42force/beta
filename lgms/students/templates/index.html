@@ -33,12 +33,12 @@
 	<header>
 		<nav class="navbar navbar-expand-md navbar fixed-top" style="background-color: #182c39;">
 			<a class="navbar-brand" href="#">
-          {% load static %}
-          <img src="{% static 'images/lgms.png'%}" width="75" height="75" class="d-inline-block align-top" alt="">
-        </a>
+				{% load static %}
+				<img src="{% static 'images/lgms.png'%}" width="75" height="75" class="d-inline-block align-top" alt="">
+			</a>
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+				<span class="navbar-toggler-icon"></span>
+			</button>
 			<div class="collapse navbar-collapse" id="navbarCollapse">
 				{% get_flatpages as flatpages %}
 				<ul class="navbar-nav mr-auto">
@@ -50,11 +50,11 @@
 				</ul>
 				<div class="btn-group">
 					<button type="button" class="btn btn-outline-success my-2 my-sm-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              ACCESS OPTIONS
-            </button>
+						ACCESS OPTIONS
+					</button>
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 						<a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a>
-						<a class="dropdown-item" href="{% url 'home' %}">Parents Portal</a>
+						<a class="dropdown-item" href="{% url 'home' %}">Online Portal</a>
 						<a class="dropdown-item" href="{% url 'about'%}">Official Page</a>
 					</div>
 				</div>
@@ -62,79 +62,8 @@
 		</nav>
 	</header>
 	<main role="main">
-		<br>
-		<br>
-		<div class="container marketing">
-			<div id="myCarousel" class="carousel slide" data-ride="carousel">
-				<ol class="carousel-indicators">
-					<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-					<li data-target="#myCarousel" data-slide-to="1"></li>
-					<li data-target="#myCarousel" data-slide-to="2"></li>
-					<li data-target="#myCarousel" data-slide-to="3"></li>
-					<li data-target="#myCarousel" data-slide-to="4"></li>
-				</ol>
-				<div class="carousel-inner">
-					<div class="carousel-item active">
-						<img class="first-slide" src="{% static 'images/daughter_retouched.jpg'%}" alt="First slide">
-						<div class="container">
-							<div class="carousel-caption text-left">
-								<h1>Welcome from the School Head</h1>
-								<p>Ms. Jean De Guzman</p>
-								<p><a class="btn btn-lg btn-success" href="{% url 'signup' %}" role="button">Enroll Now</a></p>
-								<p><a class="btn btn-lg btn-success" href="{% url 'admission' %}" role="button">Inquire Now</a></p>
-							</div>
-						</div>
-					</div>
-					<div class="carousel-item">
-						<img class="second-slide" src="{% static 'images/lgms4.jpg'%}" alt="Second slide">
-						<div class="container">
-							<div class="carousel-caption text-right">
-								<h1>Give a Gift Concert</h1>
-								<p><a class="btn btn-lg btn-success" href="{% url 'gallery'%}" role="button">Learn more</a></p>
-							</div>
-						</div>
-					</div>
-					<div class="carousel-item">
-						<img class="third-slide" src="{% static 'images/lgms9.jpg'%}" alt="Third slide">
-						<div class="container">
-							<div class="carousel-caption text-right">
-								<h1>Family Day</h1>
-								<p><a class="btn btn-lg btn-primary" href="{% url 'gallery'%}" role="button">Browse gallery</a></p>
-							</div>
-						</div>
-					</div>
-					<div class="carousel-item">
-						<img class="fourth-slide" src="{% static 'images/julytest.jpg'%}" alt="Third slide">
-						<div class="container">
-							<div class="carousel-caption text-right">
-								<h1>July Highlights</h1>
-								<p><a class="btn btn-lg btn-primary" href="{% url 'gallery'%}" role="button">Browse gallery</a></p>
-							</div>
-						</div>
-					</div>
-					<div class="carousel-item">
-						<img class="fifth-slide" src="{% static 'images/lgms5.jpg'%}" alt="Third slide">
-						<div class="container">
-							<div class="carousel-caption text-middle">
-								<h1>Welcome to LGMS</h1>
-								<p></p>
-								<p><a class="btn btn-lg btn-primary" href="{% url 'gallery'%}" role="button">Browse gallery</a></p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
-			</a>
-				<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-				<span class="carousel-control-next-icon" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
-			</a>
-			</div>
-		</div>
-		{% block content %} {% endblock %}
 
+		{% block content %} {% endblock %}
 		<!-- FOOTER -->
 		</div>
 		<footer id="myFooter">
@@ -144,7 +73,7 @@
 						<h5>Get started</h5>
 						<ul>
 							<li><a href="{% url 'about'%}">Home</a></li>
-							<li><a href="{% url 'signup'%}">Sign up</a></li>
+							<li><a href="{% url 'signup_form'%}">Sign up</a></li>
 							<li><a href="{% url 'admission' %}#contact">Downloads</a></li>
 						</ul>
 					</div>
@@ -180,120 +109,7 @@
 			<div class="" id="testmap">
 				<iframe id="map-container" frameborder="0" style="border:0" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3863.513517661026!2d121.01180481500596!3d14.455176789895258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ce3dd275c431%3A0x3120fad3d13ece50!2s266+Aguirre+Ave%2C+Manila%2C+1700+Metro+Manila!5e0!3m2!1sen!2sph!4v1533988902594">
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	      </iframe>
+				</iframe>
 			</div>
 
 			<div class="social-networks">

@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'rc=^m)&jx)02&dp-6r1&99e@2rq7$sd1a3e^2twan-(e92l#=h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 # from tutorial DEBUG = os.environ['DEBUG'] == 'True' # environment vars are strings. "convert" to boolean. lol, Python
 
 
@@ -66,7 +66,7 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL ='students.CustomUser'
 #AUTH_USER_MODEL = 'students.StudentBio'
-STAR_RATINGS_RATING_MODEL = 'students.TestRating'
+#STAR_RATINGS_RATING_MODEL = 'students.TestRating'
 PHONENUMBER_DEFAULT_REGION = 'PH'
 
 
@@ -82,7 +82,14 @@ MIDDLEWARE = [
     #this is my customised middleware
     'students.middleware.LoginRequiredMiddleWare',
 
+
+
 ]
+
+
+###middleware for nginx##
+NGINX_DOWNLOAD_MIDDLEWARE_MEDIA_ROOT = os.path.join(BASE_DIR, 'students/media/forms')
+
 
 ROOT_URLCONF = 'lgms.urls'
 
@@ -110,8 +117,8 @@ WSGI_APPLICATION = 'lgms.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+         # 'ENGINE': 'django.db.backends.sqlite3',
+         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
          #'ENGINE': 'django.db.backends.postgresql.psycopg2',
          #'NAME': 'lgmsdatabase',
          #'USER': 'postgres',
@@ -119,7 +126,16 @@ DATABASES = {
          # https://console.cloud.google.com/sql/instances
          #'HOST': '35.189.166.245',
          #'PORT': '5432', #at the moment of this writing google cloud postgresql is using the default postgresql port 5432
-
+		#
+		'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'school',
+        'USER': 'testroot',
+        'PASSWORD': 'testroot',
+		'OPTIONS': {
+    	'sql_mode': 'STRICT_TRANS_TABLES',},
+		'https://console.cloud.google.com/sql/instances'
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
 
     }
 }
@@ -165,13 +181,11 @@ USE_TZ = True
 #this is if uploaded in google console platform
 #https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/students
 #STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
-STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/lgms/static'
 #STATIC_ROOT = 'static'
-#STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
-
+STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
 #STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
-
-STATIC_URL = '/static/'
+STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/lgms/static'
+#STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'students/media')
 

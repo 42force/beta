@@ -8,6 +8,11 @@ runtime_config:
 beta_settings:
     cloud_sql_instances: lgmsv1-08052018:us-central1:lgmsdb
 
+env_variables:
+    # Replace user, password, database, and instance connection name with the values obtained
+    # when configuring your Cloud SQL instance.
+    SQLALCHEMY_DATABASE_URI: >-
+      mysql+pymysql://localhost:foundation2000@/DATABASE?unix_socket=/cloudsql/lgmsdb
 
 # runtime: python
 #

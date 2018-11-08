@@ -13,36 +13,24 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import login
 from django.contrib.auth.models import User
-from .models import StudentBio, CustomUser, IllnessInfo, PresentCondition, HospitalInfo, ImmunisationInfo, AccidentInfo
-from .forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm, PresentConditionForm
+from .models import StudentBio, CustomUser, IllnessInfo, PresentCondition, HospitalInfo, ImmunisationInfo, AccidentInfo, Document
+from .forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm, PresentConditionForm, CustomUserForm
 
 from django.contrib import messages
 
+
+
+
+#
+# casa_url = CasaDownloadView.as_view()
+# forms_url = FormsDownloadView.as_view()
+#test decorator for nginx
+
 #################this is for the download ############################
-import io
-from django.http import FileResponse
-from reportlab.pdfgen import canvas
+# import io
+# from django.http import FileResponse
+# from reportlab.pdfgen import canvas
 
-def casaview(request):
-    with open('students/media/forms/casaform.pdf', 'r') as pdf:
-        response = HttpResponse(pdf.read(), contenttype='application/pdf')
-        response['Content-Disposition'] = 'inline;filename=casaform.pdf'
-        return response
-    pdf.closed
-
-#############################################
-
-def casa_view(request):
-    buffer = io.BytesIO()
-
-    p = Canvas.Canvas(buffer)
-
-    p.drawString(100,100, "Hello There")
-
-    p.showPage()
-    p.save()
-
-    return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
 #############################################
 
 def home(request):
@@ -99,13 +87,29 @@ def studentbioid(request, pk):
     }
     #return render(request, "students/.html", context)
     #original code
-    return render(request, "students/home.html", context)
+    return render(request, "students/portal.html", context)
 
 
-class SignUp(generic.CreateView):
-    form_class = CustomUserCreationForm
-    success_url = reverse_lazy('login')
-    template_name = 'signup.html'
+# class SignUp(generic.CreateView):
+#     form_class = CustomUserCreationForm
+#     #this is previously login.html but just a test
+#     #will check if we can customise the login.html
+#     success_url = reverse_lazy('login')
+#     ##originally signup.html changed to home.html
+#     template_name = 'students/home.html'
+
+
+#this signup_form and login_form not working
+def signup_form(request):
+    registrationform = CustomUserCreationForm
+    return render(request, 'students/home.html', {'registrationform': registrationform})
+    success_url = reverse_lazy('students/home')
+
+
+def login_form(request):
+    loginform = CustomUserForm()
+    return render(request, 'students/home.html', {'loginform': loginform})
+    success_url = reverse_lazy('students/home')
 
 #@login_required
 class StudentBioList(ListView):

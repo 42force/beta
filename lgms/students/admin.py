@@ -16,7 +16,7 @@ from django.db.models import Avg, Max, Sum, Min
 
 ## end of flatpagetest
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser,Teachers, GradeYear, Subjects, CharacterBuildingActivities, StudentBio, Students, ParentsInfo, PresentCondition, IllnessInfo, HospitalInfo,AccidentInfo, ImmunisationInfo, StudentGrades, CharacterRatings, ObservationLists, CharacterObservation, StatementAccount, Compute
+from .models import CustomUser,Faculty, GradeYear, Subjects, CharacterBuildingActivities, StudentBio, Students, ParentsInfo, PresentCondition, IllnessInfo, HospitalInfo,AccidentInfo, ImmunisationInfo, StudentGrades, ObservationLists, CharacterObservation, StatementAccount, Compute
 # Register your models here.
 
 admin.site.site_header = 'Learning Garden Montessori Administration'
@@ -62,7 +62,7 @@ class StudentBioAdmin(admin.ModelAdmin):
     search_fields = ['studentname__studentname']
     list_filter = ['gradeyear']
     #fields = ['user','studentname', 'momsname', 'popsname', 'guardiansname', 'gradeyear', 'teachersname', 'subjects', 'charactersets']
-    filter_horizontal = [ 'teachersname', 'subjects','charactersets']
+    filter_horizontal = [ 'facultyname', 'subjects','charactersets']
     #this has been added to test if we can edit the field
     fieldsets = (
         (None, {
@@ -78,23 +78,24 @@ class ParentsInfoAdmin(admin.ModelAdmin):
     fields = ['mothersname', 'fathersname', 'guardiansname', 'address', 'email', 'mobilenumber' ]
 
 
-class TeachersAdmin(admin.ModelAdmin):
-    list_display = ['teachersname', 'email', 'teachers_id', 'birthday', 'rolegroup']
+class FacultyAdmin(admin.ModelAdmin):
+    list_display = ['facultyname', 'email', 'faculty_id', 'birthday', 'rolegroup']
 
 class StudentsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'studentname', 'student_id', 'birthday', 'groupinfo']
+    list_display = ['id', 'studentname', 'student_id', 'birthday', 'lrn_no', 'groupinfo']
+    search_fields = ['studentname__studentname']
 
 class StudentGradesAdmin(admin.ModelAdmin):
-    list_display = ['studentname', 'teachersname', 'subjectname', 'grades', 'dateperiod']
-    fields  = ['studentname', 'teachersname', 'subjectname', 'grades', 'dateperiod']
+    list_display = ['studentname', 'facultyname', 'subjectname', 'grades', 'dateperiod']
+    fields  = ['studentname', 'facultyname', 'subjectname', 'grades', 'dateperiod']
     search_fields = ['studentname__studentname']
     list_filter = ['studentname']
 
-class CharacterRatingsAdmin(admin.ModelAdmin):
-    list_display = ['studentname', 'charactersets', 'chargrades', 'dateadded']
-    fields = ['studentname', 'charactersets', 'chargrades', 'dateadded']
-    search_fields = ['studentname__studentname']
-    list_filter = ['chargrades']
+# class CharacterRatingsAdmin(admin.ModelAdmin):
+#     list_display = ['studentname', 'charactersets', 'chargrades', 'dateadded']
+#     fields = ['studentname', 'charactersets', 'chargrades', 'dateadded']
+#     search_fields = ['studentname__studentname']
+#     list_filter = ['chargrades']
 
 
 class CharacterObservationAdmin(admin.ModelAdmin):
@@ -170,7 +171,7 @@ admin.site.register(Compute, ComputeAdmin)
 admin.site.register(StatementAccount, StatementAccountAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(ParentsInfo, ParentsInfoAdmin)
-admin.site.register(Teachers, TeachersAdmin)
+admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(GradeYear)
 admin.site.register(Subjects)
 admin.site.register(CharacterBuildingActivities)
@@ -184,7 +185,7 @@ admin.site.register(HospitalInfo, HospitalInfoAdmin)
 admin.site.register(AccidentInfo, AccidentInfoAdmin)
 admin.site.register(ImmunisationInfo, ImmunisationInfoAdmin)
 admin.site.register(StudentGrades, StudentGradesAdmin)
-admin.site.register(CharacterRatings, CharacterRatingsAdmin)
+# admin.site.register(CharacterRatings, CharacterRatingsAdmin)
 admin.site.register(ObservationLists)
 admin.site.register(CharacterObservation, CharacterObservationAdmin)
 # admin.site.register(AssessmentStudents)
