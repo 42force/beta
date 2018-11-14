@@ -121,7 +121,7 @@ class Students(models.Model):
     studentname = models.CharField('Student Name', max_length=64)
     student_id = models.IntegerField('Student ID')
     birthday = models.DateField('Date of Birth', default=date.today)
-    lrn_no = models.CharField('Learners Number', max_length=64)
+    lrn_no = models.CharField('Learners Number', default="", max_length=64)
 
     groupchoice = {
 
@@ -398,7 +398,7 @@ class StudentBio(models.Model):
 class StudentGrades(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, max_length=64, on_delete=models.CASCADE, blank=False, null=True)
     studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, verbose_name="Student Name")
-    facultyname = models.ForeignKey('Faculty', max_length=64, on_delete=models.CASCADE, verbose_name=" Teachers Name")
+    facultyname = models.ForeignKey('Faculty', default="", max_length=64, on_delete=models.CASCADE, verbose_name=" Teachers Name")
     subjectname = models.ForeignKey('Subjects', max_length=64, on_delete=models.CASCADE, verbose_name="Subject Name")
 
     grade = {
