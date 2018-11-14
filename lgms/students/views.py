@@ -54,7 +54,7 @@ def slist(request):
     context = {
         "studentbios": StudentBio.objects.all()
     }
-    return render(request, "students/portal.html", context)
+    return render(request, "students/home.html", context)
 
 
 def ucheck(request):
@@ -62,7 +62,7 @@ def ucheck(request):
     context = {
         "userbio": Users.objects.all()
     }
-    return render(request, "students/portal.html", context)
+    return render(request, "students/home.html", context)
 
     #original
     #return render(request, "students/studentbio.html", context)
@@ -87,29 +87,29 @@ def studentbioid(request, pk):
     }
     #return render(request, "students/.html", context)
     #original code
-    return render(request, "students/portal.html", context)
+    return render(request, "students/home.html", context)
 
 
-# class SignUp(generic.CreateView):
-#     form_class = CustomUserCreationForm
-#     #this is previously login.html but just a test
-#     #will check if we can customise the login.html
-#     success_url = reverse_lazy('login')
-#     ##originally signup.html changed to home.html
-#     template_name = 'students/home.html'
+class SignUp(generic.CreateView):
+    form_class = CustomUserCreationForm
+    #this is previously login.html but just a test
+    #will check if we can customise the login.html
+    success_url = reverse_lazy('login')
+    ##originally signup.html changed to home.html
+    template_name = 'signup.html'
 
 
 #this signup_form and login_form not working
-def signup_form(request):
-    registrationform = CustomUserCreationForm
-    return render(request, 'students/home.html', {'registrationform': registrationform})
-    success_url = reverse_lazy('students/home')
+# def signup_form(request):
+#     registrationform = CustomUserCreationForm
+#     return render(request, 'students/home.html', {'registrationform': registrationform})
+#     success_url = reverse_lazy('students/home')
 
 
-def login_form(request):
-    loginform = CustomUserForm()
-    return render(request, 'students/home.html', {'loginform': loginform})
-    success_url = reverse_lazy('students/home')
+# def login_form(request):
+#     loginform = CustomUserForm()
+#     return render(request, 'students/home.html', {'loginform': loginform})
+#     success_url = reverse_lazy('students/home')
 
 #@login_required
 class StudentBioList(ListView):
@@ -134,7 +134,7 @@ class PresentConditionUpdate(UpdateView):
 class PresentConditionDelete(DeleteView):
     model = PresentCondition
     fields = ['user', 'name', 'currentcondition', 'conditiondetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
-    success_url = reverse_lazy('students/portal')
+    success_url = reverse_lazy('students/home')
 ##############################ILLNESS FORM ####################################
 class IllnessInfoCreate(CreateView):
     model = IllnessInfo
@@ -147,7 +147,7 @@ class IllnessInfoUpdate(UpdateView):
 class IllnessInfoDelete(DeleteView):
     model = IllnessInfo
     fields = ['user', 'name', 'illnessinfo', 'illnessdetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
-    success_url = reverse_lazy('students/portal')
+    success_url = reverse_lazy('students/home')
 
 ##############################ILLNESS FORM ####################################
 
@@ -165,7 +165,7 @@ class HospitalInfoUpdate(UpdateView):
 class HospitalInfoDelete(DeleteView):
     model = HospitalInfo
     fields = ['user', 'name', 'reasonforhospital', 'hospitalisationdetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
-    success_url = reverse_lazy('students/portal')
+    success_url = reverse_lazy('students/home')
 
 ##############################HOSPITAL FORM ####################################
 
@@ -182,7 +182,7 @@ class AccidentInfoUpdate(UpdateView):
 class AccidentInfoDelete(DeleteView):
     model = HospitalInfo
     fields = ['user', 'name', 'accidentdetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
-    success_url = reverse_lazy ('students/portal')
+    success_url = reverse_lazy ('students/home')
 
 ##############################ACCIDENT FORM ####################################
 
@@ -199,7 +199,7 @@ class ImmunisationInfoUpdate(UpdateView):
 class ImmunisationInfoDelete(DeleteView):
     model = ImmunisationInfo
     fields = ['user', 'name', 'immunedetails', 'treatmentdetails', 'startperiodofimmune', 'endperiodimmune']
-    success_url = reverse_lazy ('students/portal')
+    success_url = reverse_lazy ('students/home')
 
 
 

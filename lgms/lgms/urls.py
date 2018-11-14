@@ -30,6 +30,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('pages/', include('django.contrib.flatpages.urls')),
 
+
 ]
 
     #path('studentprofile/', TemplateView.as_view(template_name='studentprofile')),

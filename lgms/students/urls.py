@@ -20,16 +20,15 @@ from django.conf.urls import url
 urlpatterns = [
 
     #test for the downloadview
-
     #test for the downloadview
-    #path('home/', views.SignUp.as_view(), name='signup'),
+    path('signup/', views.SignUp.as_view(), name='signup'),
 
     #experiment of putting login to home.html
     #path('accounts/login', auth_views.LoginView.as_view(template_name='students/home.html')),
 
     #this is a test for customising direction for login and signup form
-    path('home', views.login_form, name='login_form'),
-    path('home', views.signup_form, name='signup_form'),
+    #path('home', views.login_form, name='login_form'),
+    #path('home', views.signup_form, name='signup_form'),
 
     # path('signup/parents/', views.StudentSignupView.as_view(), name='signup_parents'),
     # path('signup/teachers/', views.TeachersSignupView.as_view(), name='signup_teachers'),

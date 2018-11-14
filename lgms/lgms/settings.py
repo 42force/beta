@@ -197,7 +197,7 @@ STATICFILES_DIRS = (
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 #login route for url template for the login HOME
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = '/'
 
 #email backend configuration

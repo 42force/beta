@@ -6,19 +6,43 @@
   <!-- Three columns of text below the carousel -->
   <div class="container">
     <hr class="featurette-divider">
-    <h1 class="display-2 text-center">Admission Process</h1>
+    <h1 class="display-2 text-center">Check our Campus</h1>
   </div>
   <hr class="featurette-divider">
 
   <div class="row justify-content-md-center">
 
-    <!-- test modal -->
+
     <!-- test modal -->
     <div class="col-lg-4">
       <span class="fa-stack fa-4x">
-              <a href="#" data-toggle="modal" data-target="#applicationformsModalCenter">
-              <i class="fa fa-download fa-stack-2x icon-background green"></i></a>
-            </span>
+        <a href="{% url 'login'%}">
+          <i class="fa fa-user-alt fa-stack-2x icon-background green"></i></a>
+      </span>
+      <h2>Online Portal</h2>
+      <p></p>
+      <!-- modal form of Application Form -->
+
+      <!-- modal form of Application Form -->
+    </div><!-- /.col-lg-4 -->
+    <!-- test modal -->
+    <div class="col-lg-4">
+      <span class="fa-stack fa-4x">
+        <a href="{% url 'signup'%}">
+          <i class="fa fa-chalkboard-teacher fa-stack-2x icon-background green"></i></a>
+      </span>
+      <h2>Apply Online</h2>
+      <p></p>
+      <!-- modal form of Application Form -->
+
+      <!-- modal form of Application Form -->
+    </div><!-- /.col-lg-4 -->
+    <!-- test modal -->
+    <div class="col-lg-4">
+      <span class="fa-stack fa-4x">
+        <a href="#" data-toggle="modal" data-target="#applicationformsModalCenter">
+          <i class="fa fa-download fa-stack-2x icon-background green"></i></a>
+      </span>
       <h2>Application Forms</h2>
       <p></p>
       <!-- modal form of Application Form -->
@@ -33,11 +57,16 @@
             </div>
             <div class="modal-body">
               <p><a href="https://drive.google.com/open?id=1gR0Lsxb5SN8GEDKsOXyolacCYbCLHugu" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">CASA Application Form</a></p>
-              <p><a href="https://drive.google.com/open?id=1cBYwZFM6Jz0Sp39zRhwIb-c6FTtA97pd" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Grade School Application Form</a></p>
-              <p><a href="https://drive.google.com/file/d/1FBNQB-ox-zY20XCNCOvI6L8hMrVieSJ0/view?usp=sharing" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Grade Student Recommendation Form</a></p>
-              <p><a href="https://drive.google.com/file/d/1nCMhibKUUoGlcEu5Z_G3lt_VAeuTLsx0/view?usp=sharing" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">High School Application Forms</a></p>
-              <p><a href="https://drive.google.com/file/d/1zXXrCbN6bO6opoovfxPcngydAdyHHbDr/view?usp=sharing" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">High School Recommendation Forms</a></p>
-              <p><a href="https://drive.google.com/file/d/10juwb5LYoSRpVEEzq526Ks9lszvzRkiK/view?usp=sharing" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Hiring Application Forms</a></p>
+              <p><a href="https://drive.google.com/open?id=1cBYwZFM6Jz0Sp39zRhwIb-c6FTtA97pd" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Grade School
+                  Application Form</a></p>
+              <p><a href="https://drive.google.com/file/d/1FBNQB-ox-zY20XCNCOvI6L8hMrVieSJ0/view?usp=sharing" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Grade
+                  Student Recommendation Form</a></p>
+              <p><a href="https://drive.google.com/file/d/1nCMhibKUUoGlcEu5Z_G3lt_VAeuTLsx0/view?usp=sharing" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">High
+                  School Application Forms</a></p>
+              <p><a href="https://drive.google.com/file/d/1zXXrCbN6bO6opoovfxPcngydAdyHHbDr/view?usp=sharing" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">High
+                  School Recommendation Forms</a></p>
+              <p><a href="https://drive.google.com/file/d/10juwb5LYoSRpVEEzq526Ks9lszvzRkiK/view?usp=sharing" role="button" class="btn btn-secondary success" title="Popover title" data-content="Popover body content is set in this attribute.">Hiring
+                  Application Forms</a></p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
@@ -50,8 +79,8 @@
     <div id="contact" class="col-lg-4">
       <span class="fa-stack fa-4x">
         <a href="#" data-toggle="modal" data-target="#mapModalCenter">
-              <i class="fa fa-map-marker fa-stack-2x icon-background green"></i></a>
-                </span>
+          <i class="fa fa-map-marker fa-stack-2x icon-background green"></i></a>
+      </span>
       <h2>Location</h2>
       <!-- this is for map container -->
       <div class="modal fade" id="mapModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -65,7 +94,7 @@
             </div>
             <div class="modal-body">
               <iframe id="map-container" frameborder="0" style="border:0" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3863.513517661026!2d121.01180481500596!3d14.455176789895258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ce3dd275c431%3A0x3120fad3d13ece50!2s266+Aguirre+Ave%2C+Manila%2C+1700+Metro+Manila!5e0!3m2!1sen!2sph!4v1533988902594">
-      	      </iframe>
+              </iframe>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
@@ -78,23 +107,23 @@
     </div><!-- /.col-lg-4 -->
     <div class="col-lg-4">
       <span class="fa-stack fa-4x">
-              <a href="#">
-              <i class="fa fa-phone fa-stack-2x icon-background green"></i></a>
-            </span>
+        <a href="#">
+          <i class="fa fa-phone fa-stack-2x icon-background green"></i></a>
+      </span>
       <h2>+6328204064</h2>
       <h2>+6327030662</h2>
     </div><!-- /.col-lg-4 -->
     <div class="col-lg-4">
       <span class="fa-stack fa-4x">
-              <a href="mailto:lrng_garden_montessori@yahoo.com.ph?subject=inquiry">
-              <i class="fa fa-envelope fa-stack-2x icon-background green"></i></a>
-            </span>
+        <a href="mailto:lrng_garden_montessori@yahoo.com.ph?subject=inquiry">
+          <i class="fa fa-envelope fa-stack-2x icon-background green"></i></a>
+      </span>
       <h2>Email Us</h2>
       <p></p>
     </div><!-- /.col-lg-4 -->
   </div><!-- /.row -->
   <hr class="featurette-divider">
-  <h1 class="display-2 text-center">Admission Process</h1>
+  <h1 class="display-2 text-center">Registration Process</h1>
   <hr class="featurette-divider">
   <!-- equal row new students  -->
   <div class="container">
@@ -106,9 +135,9 @@
           <div class="col-md-auto">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
               <span class="fa-stack fa-4x">
-                    <i class="fa fa-user fa-stack-2x icon-background blue-icon"></i>
-                </span>
-                <p class="lead">New Students</p>
+                <i class="fa fa-user fa-stack-2x icon-background blue-icon"></i>
+              </span>
+              <p class="lead">New Students</p>
             </button>
           </div>
           <div class="col col-lg-2">
@@ -249,8 +278,8 @@
           <div class="col-md-auto">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#oldstudentModalCenter">
               <span class="fa-stack fa-4x">
-                    <i class="fa fa-user fa-stack-2x icon-background blue-icon"></i>
-                </span>
+                <i class="fa fa-user fa-stack-2x icon-background blue-icon"></i>
+              </span>
               <p class="lead">Old Students</p>
             </button>
           </div>
@@ -296,8 +325,8 @@
   <hr class="featurette-divider">
   <div class="row">
     <span class="fa-stack fa-4x">
-        <i class="fa fa-edit fa-stack-2x icon-background green"></i>
-      </span>
+      <i class="fa fa-edit fa-stack-2x icon-background green"></i>
+    </span>
     <h2 class="blue-icon">Policies on School Fees</h2>
     <div class="card">
       <div class="card-body">
@@ -324,8 +353,8 @@
   <hr class="featurette-divider">
   <div class="row">
     <span class="fa-stack fa-4x">
-          <i class="fa fa-copy fa-stack-2x icon-background green"></i>
-        </span>
+      <i class="fa fa-copy fa-stack-2x icon-background green"></i>
+    </span>
     <h2 class="blue-icon">School Record Transfer</h2>
     <div class="card">
       <div class="card-body">
@@ -352,8 +381,8 @@
   <hr class="featurette-divider">
   <div class="row">
     <span class="fa-stack fa-4x">
-          <i class="fa fa-bell fa-stack-2x icon-background green"></i>
-        </span>
+      <i class="fa fa-bell fa-stack-2x icon-background green"></i>
+    </span>
     <h2 class="blue-icon">Class Schedule</h2>
     <div class="card">
       <div class="card-body">
