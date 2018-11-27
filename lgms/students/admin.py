@@ -16,7 +16,7 @@ from django.db.models import Avg, Max, Sum, Min
 
 ## end of flatpagetest
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser,Faculty, GradeYear, Subjects, CharacterBuildingActivities, StudentBio, Students, ParentsInfo, PresentCondition, IllnessInfo, HospitalInfo,AccidentInfo, ImmunisationInfo, StudentGrades, ObservationLists, CharacterObservation, StatementAccount, Compute
+from .models import CustomUser,Faculty, GradeYear, Subjects, CharacterBuildingActivities, Students, PresentCondition, IllnessInfo, HospitalInfo,AccidentInfo, ImmunisationInfo, StudentGrades, ObservationLists, CharacterObservation, StatementAccount, Compute
 # Register your models here.
 
 admin.site.site_header = 'Learning Garden Montessori Administration'
@@ -36,10 +36,10 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ['email', 'username', 'name','fathersname', 'guardiansname', 'address', 'childsname', 'dateofbirth', 'dateuserjoined', 'mobilenumber', 'homenumber','civilstatus', 'religion', 'studentname', 'applicationtype', 'studentbioidinfo']
+    list_display = ['email', 'first_name', 'last_name','address', 'dateofbirth', 'dateuserjoined', 'mobilenumber', 'homenumber','civilstatus', 'religion']
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('name', 'mobilenumber', 'address', 'dateofbirth', 'dateuserjoined', 'civilstatus', 'religion', 'studentname', 'applicationtype', 'profilepic',  'studentbioidinfo')}),
+        ('Personal info', {'fields': ('first_name', 'mobilenumber', 'address', 'dateofbirth', 'dateuserjoined', 'civilstatus', 'religion')}),
     )
     search_fields = ('username',)
     ordering = ('email',)
@@ -58,7 +58,7 @@ UserAdmin.add_fieldsets = (
 
 # FOR STUDENT BIO IN PROFILE
 class StudentBioAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'studentname','momsname', 'popsname', 'guardiansname', 'gradeyear', 'financialinfo', 'profilepic']
+    list_display = ['id', 'user', 'studentname','momsname', 'popsname', 'guardiansname', 'gradeyear', 'financialinfo']
     search_fields = ['studentname__studentname']
     list_filter = ['gradeyear']
     #fields = ['user','studentname', 'momsname', 'popsname', 'guardiansname', 'gradeyear', 'teachersname', 'subjects', 'charactersets']
@@ -71,11 +71,11 @@ class StudentBioAdmin(admin.ModelAdmin):
         }),
     )
 
-class ParentsInfoAdmin(admin.ModelAdmin):
-    list_display = ['mothersname', 'fathersname', 'guardiansname', 'address', 'email', 'mobilenumber' ]
-    search_fields = ['mothersname__mothersname']
-    list_filter = ['email']
-    fields = ['mothersname', 'fathersname', 'guardiansname', 'address', 'email', 'mobilenumber' ]
+# class ParentsInfoAdmin(admin.ModelAdmin):
+#     list_display = ['mothersname', 'fathersname', 'guardiansname', 'address', 'email', 'mobilenumber' ]
+#     search_fields = ['mothersname__mothersname']
+#     list_filter = ['email']
+#     fields = ['mothersname', 'fathersname', 'guardiansname', 'address', 'email', 'mobilenumber' ]
 
 
 class FacultyAdmin(admin.ModelAdmin):
@@ -170,14 +170,14 @@ class ImmunisationInfoAdmin(admin.ModelAdmin):
 admin.site.register(Compute, ComputeAdmin)
 admin.site.register(StatementAccount, StatementAccountAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(ParentsInfo, ParentsInfoAdmin)
+# admin.site.register(ParentsInfo, ParentsInfoAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(GradeYear)
 admin.site.register(Subjects)
 admin.site.register(CharacterBuildingActivities)
 
 # admin.site.register(MedicalRecords, MedicalRecordsAdmin)
-admin.site.register(StudentBio, StudentBioAdmin)
+# admin.site.register(StudentBio, StudentBioAdmin)
 admin.site.register(Students, StudentsAdmin)
 admin.site.register(PresentCondition, PresentConditionAdmin)
 admin.site.register(IllnessInfo, IllnessInfoAdmin)

@@ -25,7 +25,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
-from googlecloudsdk.api_lib.compute import exceptions
+from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.services import enable_api as services_api
 from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.api_lib.storage import storage_api
@@ -33,12 +33,12 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.cloudbuild import execution
 from googlecloudsdk.command_lib.projects import util as projects_util
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
-
 
 _BUILDER = 'gcr.io/compute-image-tools/daisy:release'
 
@@ -108,6 +108,16 @@ class FailedBuildException(exceptions.Error):
     super(FailedBuildException, self).__init__(
         'build {id} completed with status "{status}"'.format(
             id=build.id, status=build.status))
+
+
+class SubnetException(exceptions.Error):
+  """Exception for subnet related errors."""
+
+
+class ImageOperation(object):
+  """Enum representing image operation"""
+  IMPORT = 'import'
+  EXPORT = 'export'
 
 
 def AddCommonDaisyArgs(parser):
@@ -221,13 +231,15 @@ def _CreateCloudBuild(build_config, client, messages):
   return build, build_ref
 
 
-def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None):
+def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None,
+                            bucket_location=None):
   """Determine the name of the GCS bucket to use and create if necessary.
 
   Args:
-    bucket_name: A string containing a bucket name to use, otherwise the
-      bucket will be named based on the project id.
+    bucket_name: str, bucket name to use, otherwise the bucket will be named
+      based on the project id.
     storage_client: The storage_api client object.
+    bucket_location: str, bucket location
 
   Returns:
     A string containing the name of the GCS bucket to use.
@@ -235,15 +247,72 @@ def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None):
   project = properties.VALUES.core.project.GetOrFail()
   safe_project = project.replace(':', '-')
   safe_project = safe_project.replace('.', '-')
-  bucket_name = bucket_name or '{0}-daisy-bkt'.format(safe_project)
+  if not bucket_name:
+    bucket_name = '{0}-daisy-bkt'.format(safe_project)
+    if bucket_location:
+      bucket_name = '{0}-{1}'.format(bucket_name, bucket_location).lower()
+
   safe_bucket_name = bucket_name.replace('google', 'elgoog')
 
   if not storage_client:
     storage_client = storage_api.StorageClient()
 
-  storage_client.CreateBucketIfNotExists(safe_bucket_name)
+  # TODO (b/117668144): Make Daisy scratch bucket ACLs same as
+  # source/destination bucket
+  storage_client.CreateBucketIfNotExists(
+      safe_bucket_name, location=bucket_location)
 
   return safe_bucket_name
+
+
+def GetSubnetRegion():
+  """Gets region from global properties/args that should be used for subnet arg.
+
+  Returns:
+    str, region
+  Raises:
+    SubnetException: if region couldn't be inferred.
+  """
+  if properties.VALUES.compute.zone.Get():
+    return utils.ZoneNameToRegionName(
+        properties.VALUES.compute.zone.Get())
+  elif properties.VALUES.compute.region.Get():
+    return properties.VALUES.compute.region.Get()
+
+  raise SubnetException('Region or zone should be specified.')
+
+
+def ExtractNetworkAndSubnetDaisyVariables(args, operation):
+  """Extracts network/subnet out of CLI args in the form of Daisy variables.
+
+  Args:
+    args: CLI args that might contain network/subnet args.
+    operation: ImageOperation, specifies if this call is for import or export
+
+  Returns:
+    list of strs, network/subnet variables, if specified in args. Can be empty.
+  """
+  variables = []
+  add_network_variable = False
+  if args.subnet:
+    variables.append('{0}_subnet=regions/{1}/subnetworks/{2}'.format(
+        operation, GetSubnetRegion(), args.subnet.lower()))
+
+    # network variable should be empty string in case subnet is specified
+    # and network is not. Otherwise, Daisy will default network to
+    # `global/networks/default` which will fail except for default networks
+    network_full_path = ''
+    add_network_variable = True
+
+  if args.network:
+    add_network_variable = True
+    network_full_path = 'global/networks/{0}'.format(args.network.lower())
+
+  if add_network_variable:
+    variables.append('{0}_network={1}'.format(
+        operation, network_full_path))
+
+  return variables
 
 
 def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
@@ -339,3 +408,4 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
     raise FailedBuildException(build)
 
   return build
+

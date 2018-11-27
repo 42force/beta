@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic.base import TemplateView
 from students.admin import students_admin_site
+#this is the views page additional
+from students.addviews import teachers, parents
 
 #apps stay here for url
 
@@ -28,6 +30,8 @@ urlpatterns = [
     path('students-admin', students_admin_site.urls),
     path('', include('students.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/signup/parents', parents.ParentsView.as_view(), name="parentsview" ),
+    path('accounts/signup/teacher', teachers.TeachersView.as_view(), name="teachersview"),
     path('pages/', include('django.contrib.flatpages.urls')),
 
 

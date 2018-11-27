@@ -3,6 +3,7 @@ from django.urls import path
 from students.views import StudentBioList, IllnessInfoCreate, IllnessInfoUpdate, IllnessInfoDelete, PresentConditionCreate, PresentConditionUpdate, PresentConditionDelete, HospitalInfoCreate, HospitalInfoUpdate, HospitalInfoDelete, AccidentInfoCreate, AccidentInfoUpdate, AccidentInfoDelete, ImmunisationInfoCreate, ImmunisationInfoUpdate, ImmunisationInfoDelete
 
 
+
 from django.contrib.flatpages import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -37,9 +38,16 @@ urlpatterns = [
     path('news/', views.news, name="news"),
     path('admission/', views.admission, name="admission"),
     path('gallery/', views.gallery, name="gallery"),
+    path('online/', views.online, name="online"),
     #this is for flapages url end
     #this is for the download part
     #this is for flapages url end
+
+###this is a test for signup##########
+
+
+
+######signup test####################
 
     path('portal/', views.studentbioid, name="studentbioid"),
     path('portal/<int:pk>/', views.studentbioid, name="studentbioid"),

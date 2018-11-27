@@ -7,15 +7,81 @@ from django.forms.widgets import CheckboxSelectMultiple
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 
+####this is where we add another form######
 
-class CustomUserCreationForm(UserCreationForm):
+class ParentsSignUpCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ('username', 'email', 'name','fathersname','guardiansname', 'address', 'childsname', 'dateofbirth','applicationtype', 'mobilenumber', 'homenumber', 'civilstatus', 'religion')
+        fields = ('email', 'password')
 
         fieldsets = (
             (None, {'fields': ('email', 'password')}),
             ('Personal info', {'email': ('studentname',)}),
+        )
+
+
+class ParentsSignUpForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password', 'first_name', 'last_name', 'address', 'dateofbirth', 'dateupdatedbio', 'mobilenumber', 'homenumber', 'civilstatus', 'religion')
+
+
+class ParentsSignUpChangeForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ('first_name', 'email', 'address')
+
+
+
+class EditProfileForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password', 'first_name', 'last_name', 'address', 'dateofbirth', 'dateupdatedbio', 'mobilenumber', 'homenumber', 'civilstatus', 'religion')
+
+
+
+####this is where we add another form for parents##########
+
+
+
+
+##########teachers sign up form###############
+
+class TeacherSignUpCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+
+        def save(self, commit=True):
+            user = super().save(commit=False)
+            user.is_teacher = True
+            if commit:
+                user.save()
+            return user
+
+
+class TeacherSignUpForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password', 'first_name', 'last_name', 'address', 'dateofbirth', 'dateupdatedbio', 'mobilenumber', 'homenumber', 'civilstatus', 'religion')
+
+
+class TeacherSignUpChangeForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ('first_name', 'email', 'address')
+
+
+
+############teachers sign up forms############
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ('email', 'password', 'first_name', 'last_name', 'address', 'dateofbirth', 'dateupdatedbio', 'mobilenumber', 'homenumber', 'civilstatus', 'religion')
+
+        fieldsets = (
+            (None, {'fields': ('email', 'password')}),
+            ('Personal info', {'email': ('password',)}),
         )
 
 
@@ -30,14 +96,14 @@ class CustomUserForm(forms.ModelForm):
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
-        fields = ('name', 'email', 'address')
+        fields = ('first_name', 'email', 'address')
 
 
 
 class EditProfileForm(UserChangeForm):
     class Meta:
         model = CustomUser
-        fields = ('username','email', 'first_name', 'last_name', 'dateofbirth', 'studentname', 'address', 'dateuserjoined', 'mobilenumber', 'profilepic', 'religion')
+        fields = ('email', 'first_name', 'last_name', 'dateofbirth', 'address', 'dateuserjoined', 'mobilenumber', 'religion')
 
 
 class PresentConditionForm(ModelForm):

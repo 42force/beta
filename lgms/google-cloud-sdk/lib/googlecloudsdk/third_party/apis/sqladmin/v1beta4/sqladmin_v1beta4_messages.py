@@ -30,6 +30,18 @@ class AclEntry(_messages.Message):
   value = _messages.StringField(4)
 
 
+class ApiWarning(_messages.Message):
+  r"""An Admin API warning message.
+
+  Fields:
+    code: Code to uniquely identify the warning type.
+    message: The warning message.
+  """
+
+  code = _messages.StringField(1)
+  message = _messages.StringField(2)
+
+
 class BackupConfiguration(_messages.Message):
   r"""Database instance backup configuration.
 
@@ -383,26 +395,21 @@ class ExportContext(_messages.Message):
   r"""Database instance export context.
 
   Messages:
-    CsvExportOptionsValue: Options for exporting data as CSV. Exporting in CSV
-      format using the Cloud SQL Admin API is not supported for PostgreSQL
-      instances.
+    CsvExportOptionsValue: Options for exporting data as CSV.
     SqlExportOptionsValue: Options for exporting data as SQL statements.
 
   Fields:
-    csvExportOptions: Options for exporting data as CSV. Exporting in CSV
-      format using the Cloud SQL Admin API is not supported for PostgreSQL
-      instances.
+    csvExportOptions: Options for exporting data as CSV.
     databases: Databases to be exported. MySQL instances: If fileType is SQL
       and no database is specified, all databases are exported, except for the
       mysql system database. If fileType is CSV, you can specify one database,
       either by using this property or by using the
       csvExportOptions.selectQuery property, which takes precedence over this
-      property. PostgreSQL instances: If fileType is SQL, you must specify one
-      database to be exported. A fileType of CSV is not supported for
-      PostgreSQL instances.
+      property. PostgreSQL instances: Specify exactly one database to be
+      exported. If fileType is CSV, this database must match the database used
+      in the csvExportOptions.selectQuery property.
     fileType: The file type for the specified uri. SQL: The file contains SQL
-      statements. CSV: The file contains CSV data. CSV is not supported for
-      PostgreSQL instances.
+      statements. CSV: The file contains CSV data.
     kind: This is always sql#exportContext.
     sqlExportOptions: Options for exporting data as SQL statements.
     uri: The path to the file in Google Cloud Storage where the export will be
@@ -413,8 +420,7 @@ class ExportContext(_messages.Message):
   """
 
   class CsvExportOptionsValue(_messages.Message):
-    r"""Options for exporting data as CSV. Exporting in CSV format using the
-    Cloud SQL Admin API is not supported for PostgreSQL instances.
+    r"""Options for exporting data as CSV.
 
     Fields:
       selectQuery: The select query used to extract the data.
@@ -425,15 +431,33 @@ class ExportContext(_messages.Message):
   class SqlExportOptionsValue(_messages.Message):
     r"""Options for exporting data as SQL statements.
 
+    Messages:
+      MysqlExportOptionsValue: Options for exporting from MySQL.
+
     Fields:
+      mysqlExportOptions: Options for exporting from MySQL.
       schemaOnly: Export only schemas.
       tables: Tables to export, or that were exported, from the specified
         database. If you specify tables, specify one and only one database.
         For PostgreSQL instances, you can specify only one table.
     """
 
-    schemaOnly = _messages.BooleanField(1)
-    tables = _messages.StringField(2, repeated=True)
+    class MysqlExportOptionsValue(_messages.Message):
+      r"""Options for exporting from MySQL.
+
+      Fields:
+        masterData: Option to include SQL statement required to set up
+          replication. If set to 1, the dump file includes a CHANGE MASTER TO
+          statement with the binary log coordinates. If set to 2, the CHANGE
+          MASTER TO statement is written as a SQL comment, and has no effect.
+          All other values are ignored.
+      """
+
+      masterData = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+    mysqlExportOptions = _messages.MessageField('MysqlExportOptionsValue', 1)
+    schemaOnly = _messages.BooleanField(2)
+    tables = _messages.StringField(3, repeated=True)
 
   csvExportOptions = _messages.MessageField('CsvExportOptionsValue', 1)
   databases = _messages.StringField(2, repeated=True)
@@ -504,22 +528,18 @@ class ImportContext(_messages.Message):
   r"""Database instance import context.
 
   Messages:
-    CsvImportOptionsValue: Options for importing data as CSV. Importing CSV
-      data using the Cloud SQL Admin API is not supported for PostgreSQL
-      instances.
+    CsvImportOptionsValue: Options for importing data as CSV.
 
   Fields:
-    csvImportOptions: Options for importing data as CSV. Importing CSV data
-      using the Cloud SQL Admin API is not supported for PostgreSQL instances.
+    csvImportOptions: Options for importing data as CSV.
     database: The target database for the import. If fileType is SQL, this
       field is required only if the import file does not specify a database,
       and is overridden by any database specification in the import file. If
       fileType is CSV, one database must be specified.
     fileType: The file type for the specified uri. SQL: The file contains SQL
-      statements. CSV: The file contains CSV data. Importing CSV data using
-      the Cloud SQL Admin API is not supported for PostgreSQL instances.
-    importUser: The PostgreSQL user for this import operation. Defaults to
-      cloudsqlsuperuser. PostgreSQL instances only.
+      statements. CSV: The file contains CSV data.
+    importUser: The PostgreSQL user for this import operation. PostgreSQL
+      instances only.
     kind: This is always sql#importContext.
     uri: Path to the import file in Cloud Storage, in the form
       gs://bucketName/fileName. Compressed gzip files (.gz) are supported when
@@ -528,8 +548,7 @@ class ImportContext(_messages.Message):
   """
 
   class CsvImportOptionsValue(_messages.Message):
-    r"""Options for importing data as CSV. Importing CSV data using the Cloud
-    SQL Admin API is not supported for PostgreSQL instances.
+    r"""Options for importing data as CSV.
 
     Fields:
       columns: The columns to which CSV data is imported. If not specified,
@@ -607,11 +626,13 @@ class InstancesListResponse(_messages.Message):
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
+    warnings: List of warnings that ocurred while handling the request.
   """
 
   items = _messages.MessageField('DatabaseInstance', 1, repeated=True)
   kind = _messages.StringField(2, default=u'sql#instancesList')
   nextPageToken = _messages.StringField(3)
+  warnings = _messages.MessageField('ApiWarning', 4, repeated=True)
 
 
 class InstancesListServerCasResponse(_messages.Message):
@@ -668,7 +689,10 @@ class IpConfiguration(_messages.Message):
       connect to the instance using the IP. In CIDR notation, also known as
       'slash' notation (e.g. 192.168.100.0/24).
     ipv4Enabled: Whether the instance should be assigned an IP address or not.
-    privateNetwork: Reserved for future use.
+    privateNetwork: The resource link for the VPC network from which the Cloud
+      SQL instance is accessible for private IP. For example,
+      /projects/myProject/global/networks/default. This setting can be
+      updated, but it cannot be removed after it is set.
     requireSsl: Whether SSL connections over IP should be enforced or not.
   """
 
@@ -718,7 +742,7 @@ class LocationPreference(_messages.Message):
 
 class MaintenanceWindow(_messages.Message):
   r"""Maintenance window. This specifies when a v2 Cloud SQL instance should
-  preferably be restarted for system maintenance puruposes.
+  preferably be restarted for system maintenance purposes.
 
   Fields:
     day: day of week (1-7), starting on Monday.

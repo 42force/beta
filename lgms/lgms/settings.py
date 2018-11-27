@@ -82,8 +82,6 @@ MIDDLEWARE = [
     #this is my customised middleware
     'students.middleware.LoginRequiredMiddleWare',
 
-
-
 ]
 
 
@@ -182,10 +180,10 @@ USE_TZ = True
 #https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/students
 #STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
 #STATIC_ROOT = 'static'
-STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
+#STATIC_URL = 'https://storage.googleapis.com/lgmsv1-08052018.appspot.com/static/'
 #STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/static'
-STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/lgms/static'
-#STATIC_URL = '/static/'
+#STATIC_ROOT = '/Users/wackygalang/Projects/finalelgms/lgms/static'
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'students/media')
 
@@ -203,5 +201,13 @@ LOGOUT_REDIRECT_URL = '/'
 #email backend configuration
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'learninggardenmontessoridrive@gmail.com'
+EMAIL_HOST_PASSWORD = 'Foundation2000'
 
 SITE_ID = 1
+
+
+GOOGLE_RECAPTCHA_SECRET_KEY = '6Lc2XX0UAAAAAJsI5RN2xwy65lUR5Z3DGeY0ssqJ'

@@ -13,10 +13,13 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import login
 from django.contrib.auth.models import User
-from .models import StudentBio, CustomUser, IllnessInfo, PresentCondition, HospitalInfo, ImmunisationInfo, AccidentInfo, Document
-from .forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm, PresentConditionForm, CustomUserForm
+from .models import Students, CustomUser, IllnessInfo, PresentCondition, HospitalInfo, ImmunisationInfo, AccidentInfo, Document
+from .forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm, PresentConditionForm, CustomUserForm, ParentsSignUpForm, TeacherSignUpForm
 
 from django.contrib import messages
+
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 
@@ -33,6 +36,7 @@ from django.contrib import messages
 
 #############################################
 
+
 def home(request):
     return render(request, "students/home.html")
 ##############flat pages url views code###############################
@@ -47,6 +51,10 @@ def admission(request):
 
 def gallery(request):
     return render(request, 'flatpages/gallery.html')
+
+
+def online(request):
+    return render(request, 'flatpages/online.html')
 ##############flat pages url views code###############################
 
 def slist(request):
@@ -113,7 +121,7 @@ class SignUp(generic.CreateView):
 
 #@login_required
 class StudentBioList(ListView):
-    model = StudentBio
+    model = Students
     paginate_by = 10
 
 
@@ -205,11 +213,11 @@ class ImmunisationInfoDelete(DeleteView):
 
 ##############################IMMUNE FORM ####################################
 class DetailView(generic.DetailView):
-    model = StudentBio
+    model = Students
     template_name = 'students/studentbiodetail.html'
 
 class ResultsView(generic.DetailView):
-    model = StudentBio
+    model = Students
     temaplate_name = 'students/studentbioresults.html'
 
 
@@ -283,7 +291,19 @@ def latestsubjects(request):
     return render(request, 'students/latestsubjects.html', context)
 
 
+##########for lgms email##############
 
+def email(request):
+    subject = 'Thank you for registering to our site'
+    message = ' it  means a world to us '
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['receiver@gmail.com',]
+    send_mail( subject, message, email_from, recipient_list )
+    return redirect('home.html')
+
+
+
+#############for lgms email###############
 
 
 #! remember ! this is the code I based for the editprofile to work - will get back into this.

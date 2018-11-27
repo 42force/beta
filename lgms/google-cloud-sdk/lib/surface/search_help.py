@@ -20,11 +20,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.search_help import search
-from googlecloudsdk.command_lib.search_help import search_util
+from googlecloudsdk.command_lib.help_search import search
+from googlecloudsdk.command_lib.help_search import search_util
 
 
-# TODO(b/67707688): Merge this functionality with help.py.
+_DEPRECATION_WARNING = (
+    '`search-help` is deprecated. Please use `gcloud help` instead.')
+
+
+# TODO(b/112529035): Clean up this command after deprecation period.
+@base.Deprecate(is_removed=False, warning=_DEPRECATION_WARNING)
 @base.ReleaseTracks(base.ReleaseTrack.ALPHA)
 class HelpSearch(base.ListCommand):
   """Search the help text of gcloud commands.
@@ -32,6 +37,10 @@ class HelpSearch(base.ListCommand):
   Search the help text of gcloud commands for a term of interest. Prints the
   command name and a summary of the help text for any general release command
   whose help text contains the searched term.
+
+  By default, results are sorted from most to least relevant, using a localized
+  rating that is based on several heuristics and that may change in future
+  runs of this command.
   """
 
   @staticmethod
@@ -39,12 +48,14 @@ class HelpSearch(base.ListCommand):
     parser.display_info.AddTransforms(search_util.GetTransforms())
     parser.display_info.AddFormat("""
         table[all-box](
-            path.join(sep=' '):label='COMMAND',
+            commandpath():label='COMMAND',
             summary():wrap)
         """)
     parser.add_argument('term',
                         help=('Term to search for.'))
     base.URI_FLAG.RemoveFromParser(parser)
+    base.LIMIT_FLAG.SetDefault(parser, 5)
+    base.SORT_BY_FLAG.SetDefault(parser, '~relevance')
 
   def Run(self, args):
     return search.RunSearch([args.term], self._cli_power_users_only)

@@ -18,11 +18,15 @@ from djmoney.models.validators import MaxMoneyValidator, MinMoneyValidator
 #to aggregate
 from django.db.models import Avg, Max, Sum, Min
 
+from django.dispatch import receiver
+
 
 
 
 class CustomUserManager(models.Manager):
     pass
+
+
 
 class CustomUser(AbstractUser):
 
@@ -35,31 +39,17 @@ class CustomUser(AbstractUser):
     # user_type = models.PositiveSmallIntegerField(choices=user_type_choices, help_text='Choose User Role')
 
     ### this is for the user choices
-    name = models.CharField('Mothers Complete Name', blank=True, max_length=64)
-    fathersname = models.CharField('Fathers Complete Name', blank=True, max_length=64)
-    guardiansname = models.CharField('Guardians Complete Name', blank=True, max_length=64)
+    is_parent = models.BooleanField(default=False)
+    is_teacher = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    first_name = models.CharField('First Name', blank=True, max_length=64)
+    last_name = models.CharField('Last Name', blank=True, max_length=64)
     address = models.CharField('Full Address', max_length=300, blank=True)
     dateofbirth = models.DateField('Date of Birth', default=date.today)
-    childsname = models.CharField('Childs Complete Name', blank=True, max_length=64)
-    studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, blank=False, null=True, editable=True)
     dateuserjoined = models.DateTimeField('Date Registered', default=django.utils.timezone.now)
     dateupdatedbio = models.DateTimeField('Date Updated', default=django.utils.timezone.now)
     mobilenumber = PhoneNumberField('Mobile Number',help_text='MOBILE FORMAT : +639178888888', blank=True)
     homenumber = PhoneNumberField('Landline Number', blank=True, help_text='landline : +6328888888')
-    profilepic = models.ImageField('Profile Picture',upload_to='profile_image', blank=True)
-    studentbioidinfo = models.ForeignKey('StudentBio', max_length=10, on_delete=models.CASCADE, blank=False, null=True)
-    studentgradesinfo = models.ForeignKey('StudentGrades', max_length=64, on_delete=models.CASCADE, blank=False, null=True)
-
-    typeofapplication = {
-
-        ('CASA PROGRAM', 'CASA Program'),
-        ('GRADE SCHOOL PROGRAM', 'Grade School Program'),
-        ('JUNIOR HIGH SCHOOL PROGRAM', 'Junior High School Program'),
-        ('SENIOR HIGH SCHOOL PROGRAM', 'Senior High School Program'),
-        ('SPED', 'Special Education Program'),
-
-    }
-    applicationtype = models.CharField(max_length=64, choices=typeofapplication, blank=True, default='CASA PROGRAM', help_text="Choose Application Program")
 
 
     civilstats = {
@@ -91,7 +81,8 @@ class CustomUser(AbstractUser):
         verbose_name_plural = "Users Information"
 
     class Meta:
-        ordering = ['name']
+        ordering = ['username']
+
 
 # remoed this for the meantime
 
@@ -101,28 +92,30 @@ def create_customuser(sender, **kwargs):
 
 post_save.connect(create_customuser, sender=User)
 
-class ParentsInfo(models.Model):
-    mothersname = models.ForeignKey('CustomUser', max_length=30, on_delete=models.CASCADE, related_name="customuser_fathersname", verbose_name="Mothers Name")
-    fathersname = models.ForeignKey('CustomUser', max_length=30, on_delete=models.CASCADE, related_name="customuser_mothersname", verbose_name="Fathers Name")
-    guardiansname = models.CharField('Guardians Name', max_length=64, blank=True)
-    address = models.CharField('Home Address', max_length=64)
-    email = models.EmailField('Email Address', max_length=64,default='example@email.com')
-
-    mobilenumber = PhoneNumberField(help_text='MOBILE FORMAT : +639178888888')
-
-    class Meta:
-        verbose_name_plural = 'Parents Information'
-
-    def __str__(self):
-        return '%s' % (self.mothersname, self.fathersname)
+# class ParentsInfo(models.Model):
+#     mothersname = models.ForeignKey('CustomUser', max_length=30, on_delete=models.CASCADE, related_name="customuser_fathersname", verbose_name="Mothers Name")
+#     fathersname = models.ForeignKey('CustomUser', max_length=30, on_delete=models.CASCADE, related_name="customuser_mothersname", verbose_name="Fathers Name")
+#     guardiansname = models.CharField('Guardians Name', max_length=64, blank=True)
+#     address = models.CharField('Home Address', max_length=64)
+#     email = models.EmailField('Email Address', max_length=64,default='example@email.com')
+#
+#     mobilenumber = PhoneNumberField(help_text='MOBILE FORMAT : +639178888888')
+#
+#     class Meta:
+#         verbose_name_plural = 'Parents Information'
+#
+#     def __str__(self):
+#         return '%s' % (self.mothersname, self.fathersname)
 
 
 class Students(models.Model):
+    owner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='students', default="")
     studentname = models.CharField('Student Name', max_length=64)
     student_id = models.IntegerField('Student ID')
     birthday = models.DateField('Date of Birth', default=date.today)
     lrn_no = models.CharField('Learners Number', default="", max_length=64)
-
+    profilepic = models.ImageField('Profile Picture',upload_to='profile_image', blank=True)
+    subject = models.ForeignKey('Subjects', on_delete=models.CASCADE, related_name='subject', default="")
     groupchoice = {
 
         ('CASA AM', 'CM'),
@@ -186,6 +179,7 @@ class GradeYear(models.Model):
 
 class Subjects(models.Model):
     subjectname = models.CharField('Subject Name', blank=False, max_length=64)
+    color = models.CharField(max_length=64, default="#00b35c")
 
     class Meta:
         verbose_name_plural = 'Subjects Lists Information'
@@ -268,9 +262,9 @@ class IllnessInfo(models.Model):
     def __str__(self):
         return '%s' % (self.name)
 
-        #createview in views.py testing
-    def get_absolute_url(self):
-        return reverse('studentbioid', kwargs={'pk' : self.pk})
+        #createview in views.py testing- this is related to somewhere
+    # def get_absolute_url(self):
+    #     return reverse('studentbioid', kwargs={'pk' : self.pk})
 
     class Meta:
         verbose_name_plural = 'Student Illness Information'
@@ -364,35 +358,37 @@ class ImmunisationInfo(models.Model):
         verbose_name_plural = 'Student Accident Immunisation Info'
 
 
-
-class StudentBio(models.Model):
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, max_length=64, on_delete=models.CASCADE, blank=False, null=True)
-    # username = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_username", on_delete=models.CASCADE, blank=True, null=True)
-    #username = models.OneToOneField('CustomUser', max_length=64, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Primary User Info")
-    studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE)
-    #parentsnameinfo = models.CharField('Parents Information', max_length=64, blank=True)
-    momsname = models.CharField('Mothers Name', max_length=64, blank=True)
-    popsname = models.CharField('Fathers Name', max_length=64, blank=True)
-    guardiansname = models.CharField('Guardians Name', max_length=64, blank=True)
-    gradeyear = models.ForeignKey('GradeYear', max_length=30, on_delete=models.CASCADE, related_name="gradeyear_gradeyear", verbose_name="Grade Year")
-    facultyname= models.ManyToManyField('Faculty', verbose_name="Faculty Assigned")
-    #we might omit this.
-    subjects = models.ManyToManyField('Subjects', verbose_name="List of Subjects", related_name="subjectslist")
-    charactersets = models.ManyToManyField('CharacterBuildingActivities', verbose_name="Character Sets")
-    profilepic = models.ImageField('Student Profile Picture',upload_to='profile_image', blank=True)
-    #test to connect to financial statement of account - still need to modify table starting from here..
-    financialinfo = models.ForeignKey('StatementAccount', verbose_name="Statement of Account", on_delete=models.CASCADE, max_length=64, blank=True, null=True)
-    profpicimage = models.ImageField('Student Profile Picture',upload_to='profile_image', blank=True)
-
-    class Meta:
-        verbose_name_plural = "Student Profile"
-
-    class Meta:
-        ordering = ['gradeyear']
-
-    def __str__(self):
-        return '%s : %s' % (self.id, self.studentname)
+#
+# class StudentBio(models.Model):
+#
+#     user = models.ForeignKey(settings.AUTH_USER_MODEL, max_length=64, on_delete=models.CASCADE, blank=False, null=True)
+#     # username = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_username", on_delete=models.CASCADE, blank=True, null=True)
+#     #username = models.OneToOneField('CustomUser', max_length=64, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Primary User Info")
+#     studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE)
+#     #parentsnameinfo = models.CharField('Parents Information', max_length=64, blank=True)
+#     momsname = models.CharField('Mothers Name', max_length=64, blank=True)
+#     popsname = models.CharField('Fathers Name', max_length=64, blank=True)
+#     guardiansname = models.CharField('Guardians Name', max_length=64, blank=True)
+#     gradeyear = models.ForeignKey('GradeYear', max_length=30, on_delete=models.CASCADE, related_name="gradeyear_gradeyear", verbose_name="Grade Year")
+#     facultyname= models.ManyToManyField('Faculty', verbose_name="Faculty Assigned")
+#     #we might omit this.
+#     subjects = models.ManyToManyField('Subjects', verbose_name="List of Subjects", related_name="subjectslist")
+#     charactersets = models.ManyToManyField('CharacterBuildingActivities', verbose_name="Character Sets")
+#     profilepic = models.ImageField('Student Profile Picture',upload_to='profile_image', blank=True)
+#     #test to connect to financial statement of account - still need to modify table starting from here..
+#     financialinfo = models.ForeignKey('StatementAccount', verbose_name="Statement of Account", on_delete=models.CASCADE, max_length=64, blank=True, null=True)
+#     profpicimage = models.ImageField('Student Profile Picture',upload_to='profile_image', blank=True)
+#
+#     class Meta:
+#         verbose_name_plural = "Student Profile"
+#
+#     class Meta:
+#         ordering = ['gradeyear']
+#
+#     def __str__(self):
+#         return '%s : %s' % (self.id, self.studentname)
+#
+#
 
 
 class StudentGrades(models.Model):

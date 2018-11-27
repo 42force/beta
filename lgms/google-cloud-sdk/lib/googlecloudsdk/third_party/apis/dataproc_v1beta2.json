@@ -332,6 +332,43 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "allocationAffinity": {
+          "description": "Allocation Affinity for consuming Zonal allocation.",
+          "$ref": "AllocationAffinity"
+        }
+      }
+    },
+    "AllocationAffinity": {
+      "id": "AllocationAffinity",
+      "description": "Allocation Affinity for consuming Zonal allocation.",
+      "type": "object",
+      "properties": {
+        "consumeAllocationType": {
+          "enumDescriptions": [
+            "",
+            "Do not consume from any allocated capacity.",
+            "Consume any allocation available.",
+            "Must consume from a specific allocation. Must specify key value fields for specifying the allocations."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "NO_ALLOCATION",
+            "ANY_ALLOCATION",
+            "SPECIFIC_ALLOCATION"
+          ]
+        },
+        "key": {
+          "description": "Corresponds to the label key of Allocation resource.",
+          "type": "string"
+        },
+        "values": {
+          "description": "Corresponds to the label values of allocation resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -460,7 +497,9 @@
             "The Jupyter Notebook.",
             "The Hive Web HCatalog (the REST service for accessing HCatalog).",
             "The Zeppelin notebook.",
-            "The Anaconda python distribution."
+            "The Anaconda python distribution.",
+            "The Presto query engine.",
+            "The Kerberos security feature."
           ],
           "type": "array",
           "items": {
@@ -470,7 +509,9 @@
               "JUPYTER",
               "HIVE_WEBHCAT",
               "ZEPPELIN",
-              "ANACONDA"
+              "ANACONDA",
+              "PRESTO",
+              "KERBEROS"
             ]
           }
         }
@@ -478,11 +519,11 @@
     },
     "LifecycleConfig": {
       "id": "LifecycleConfig",
-      "description": "Specifies the cluster auto delete related schedule configuration.",
+      "description": "Specifies the cluster auto-delete schedule configuration.",
       "type": "object",
       "properties": {
         "idleDeleteTtl": {
-          "description": "Optional. The longest duration that cluster would keep alive while staying  idle; passing this threshold will cause cluster to be auto-deleted.",
+          "description": "Optional. The duration to keep the cluster alive while idling. Passing this threshold will cause the cluster to be deleted. Valid range: 10m, 14d.Example: \"10m\", the minimum value, to delete the cluster when it has had no jobs running for 10 minutes.",
           "type": "string",
           "format": "google-duration"
         },
@@ -492,7 +533,7 @@
           "format": "google-datetime"
         },
         "autoDeleteTtl": {
-          "description": "Optional. The life duration of cluster, the cluster will be auto-deleted at the end of this duration.",
+          "description": "Optional. The lifetime duration of cluster. The cluster will be auto-deleted at the end of this period. Valid range: 10m, 14d.Example: \"1d\", to delete the cluster 1 day after its creation..",
           "type": "string",
           "format": "google-duration"
         },
@@ -702,6 +743,10 @@
             "$ref": "YarnApplication"
           }
         },
+        "submittedBy": {
+          "description": "Output only. The email address of the user submitting the job. For jobs submitted on the cluster, the address is <code>username@hostname<\/code>.",
+          "type": "string"
+        },
         "driverOutputResourceUri": {
           "description": "Output only. A URI pointing to the location of the stdout of the job's driver program.",
           "type": "string"
@@ -720,6 +765,10 @@
         "scheduling": {
           "description": "Optional. Job scheduling configuration.",
           "$ref": "JobScheduling"
+        },
+        "jobUuid": {
+          "description": "Output only. A UUID that uniquely identifies a job within the project over time. This is in contrast to a user-settable reference.job_id that may be reused over time.",
+          "type": "string"
         }
       }
     },
@@ -1444,7 +1493,7 @@
           "type": "string"
         },
         "fields": {
-          "description": "Required. Paths to all fields that the parameter replaces. A field is allowed to appear in at most one parameter's list of field paths.A field path is similar in syntax to a google.protobuf.FieldMask. For example, a field path that references the zone field of a workflow template's cluster selector would be specified as <code>placement.clusterSelector.zone<\/code>.Also, field paths can reference fields using the following syntax:\nValues in maps can be referenced by key. Examples<br>\nlabels'key'\nplacement.clusterSelector.clusterLabels'key'\nplacement.managedCluster.labels'key'\nplacement.clusterSelector.clusterLabels'key'\njobsstep-id.labels'key'\nJobs in the jobs list can be referenced by step-id. Examples:<br>\njobsstep-id.hadoopJob.mainJarFileUri\njobsstep-id.hiveJob.queryFileUri\njobsstep-id.pySparkJob.mainPythonFileUri\njobsstep-id.hadoopJob.jarFileUris0\njobsstep-id.hadoopJob.archiveUris0\njobsstep-id.hadoopJob.fileUris0\njobsstep-id.pySparkJob.pythonFileUris0\nItems in repeated fields can be referenced by a zero-based index. Example:<br>\njobsstep-id.sparkJob.args0\nOther examples:\njobsstep-id.hadoopJob.properties'key'\njobsstep-id.hadoopJob.args0\njobsstep-id.hiveJob.scriptVariables'key'\njobsstep-id.hadoopJob.mainJarFileUri\nplacement.clusterSelector.zoneIt may not be possible to parameterize maps and repeated fields in their entirety since only individual map values and individual items in repeated fields can be referenced. For example, the following field paths are invalid:\nplacement.clusterSelector.clusterLabels\njobsstep-id.sparkJob.args",
+          "description": "Required. Paths to all fields that the parameter replaces. A field is allowed to appear in at most one parameter's list of field paths.A field path is similar in syntax to a google.protobuf.FieldMask. For example, a field path that references the zone field of a workflow template's cluster selector would be specified as placement.clusterSelector.zone.Also, field paths can reference fields using the following syntax:\nValues in maps can be referenced by key:\nlabels'key'\nplacement.clusterSelector.clusterLabels'key'\nplacement.managedCluster.labels'key'\nplacement.clusterSelector.clusterLabels'key'\njobs'step-id'.labels'key'\nJobs in the jobs list can be referenced by step-id:\njobs'step-id'.hadoopJob.mainJarFileUri\njobs'step-id'.hiveJob.queryFileUri\njobs'step-id'.pySparkJob.mainPythonFileUri\njobs'step-id'.hadoopJob.jarFileUris0\njobs'step-id'.hadoopJob.archiveUris0\njobs'step-id'.hadoopJob.fileUris0\njobs'step-id'.pySparkJob.pythonFileUris0\nItems in repeated fields can be referenced by a zero-based index:\njobs'step-id'.sparkJob.args0\nOther examples:\njobs'step-id'.hadoopJob.properties'key'\njobs'step-id'.hadoopJob.args0\njobs'step-id'.hiveJob.scriptVariables'key'\njobs'step-id'.hadoopJob.mainJarFileUri\nplacement.clusterSelector.zoneIt may not be possible to parameterize maps and repeated fields in their entirety since only individual map values and individual items in repeated fields can be referenced. For example, the following field paths are invalid:\nplacement.clusterSelector.clusterLabels\njobs'step-id'.sparkJob.args",
           "type": "array",
           "items": {
             "type": "string"
@@ -1810,6 +1859,16 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "startTime": {
+          "description": "Output only. Workflow start time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Workflow end time.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

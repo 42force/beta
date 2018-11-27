@@ -101,6 +101,10 @@ class CLI(interface.CommandLineInterface):
     if alternate_screen:
       self.renderer.erase()
     self.coshell.Run(text)
+    if alternate_screen:
+      self.renderer.erase(leave_alternate_screen=False, erase_title=False)
+      self.renderer.request_absolute_cursor_position()
+      self._redraw()
 
   # Wraps the interface.CommandLineInterface method.
   def add_buffer(self, name, buf, focus=False):
@@ -414,7 +418,7 @@ class Application(object):
       except KeyboardInterrupt:
         # ignore ctrl-c
         pass
-      except interactive_coshell.CoshellExitException:
+      except interactive_coshell.CoshellExitError:
         break
 
 

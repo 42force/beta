@@ -20,6 +20,7 @@
           <i class="fa fa-user-alt fa-stack-2x icon-background green"></i></a>
       </span>
       <h2>Online Portal</h2>
+
       <p></p>
       <!-- modal form of Application Form -->
 
@@ -28,10 +29,12 @@
     <!-- test modal -->
     <div class="col-lg-4">
       <span class="fa-stack fa-4x">
-        <a href="{% url 'signup'%}">
+        <a href="#">
           <i class="fa fa-chalkboard-teacher fa-stack-2x icon-background green"></i></a>
       </span>
       <h2>Apply Online</h2>
+      <a href="{% url 'parentsview' %}" class="btn btn-primary btn-sm" role="button">Parents</a>
+      <a href="{% url 'teachersview' %}" class="btn btn-danger btn-sm" role="button">Teachers</a>
       <p></p>
       <!-- modal form of Application Form -->
 

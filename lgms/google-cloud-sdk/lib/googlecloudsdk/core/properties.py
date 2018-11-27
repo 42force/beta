@@ -272,7 +272,7 @@ class _Sections(object):
     self.proxy = _SectionProxy()
     self.pubsub = _SectionPubsub()
     self.redis = _SectionRedis()
-    self.serverless = _SectionServerless()
+    self.run = _SectionRun()
     self.spanner = _SectionSpanner()
     self.storage = _SectionStorage()
     self.test = _SectionTest()
@@ -303,7 +303,7 @@ class _Sections(object):
         self.ml_engine,
         self.proxy,
         self.redis,
-        self.serverless,
+        self.run,
         self.spanner,
         self.test,
     ]
@@ -580,22 +580,22 @@ class _Section(object):
     return result
 
 
-class _SectionServerless(_Section):
-  """Contains the properties for the 'serverless' section."""
+class _SectionRun(_Section):
+  """Contains the properties for the 'run' section."""
 
   def __init__(self):
-    super(_SectionServerless, self).__init__('serverless', hidden=True)
+    super(_SectionRun, self).__init__('run', hidden=True)
     self.region = self._Add(
         'region',
         default='us-central1',
         help_text='The default region to use when working with Google '
-        'Serverless resources. When a `--region` flag is required '
+        'Run resources. When a `--region` flag is required '
         'but not provided, the command will fall back to this value, if set. '
-        'To see valid choices, run `gcloud serverless regions list`.')
+        'To see valid choices, run `gcloud run regions list`.')
 
     self.namespace = self._Add(
         'namespace',
-        help_text='Kubernetes namespace to create Serverless resources in.',
+        help_text='Kubernetes namespace to create Run resources in.',
         hidden=True)
 
     self.cluster = self._Add(
@@ -762,15 +762,6 @@ class _SectionApp(_Section):
     self.runtime_builders_root = self._Add(
         'runtime_builders_root',
         default='gs://runtime-builders/',
-        hidden=True)
-
-    # TODO(b/27101941): This property is a temporary fallback in case issues
-    # are caused by changing the GA command to enable the Flexible Environment
-    # API with Service Management before deploying Flexible apps. Remove if
-    # change is successful.
-    self.use_deprecated_preparation = self._AddBool(
-        'use_deprecated_preparation',
-        default=False,
         hidden=True)
 
 
@@ -1140,6 +1131,8 @@ class _SectionAuth(_Section):
         'authorization_token_file', hidden=True)
     self.credential_file_override = self._Add(
         'credential_file_override', hidden=True)
+    self.impersonate_service_account = self._Add(
+        'impersonate_service_account', hidden=True)
 
 
 class _SectionBilling(_Section):
@@ -1420,6 +1413,7 @@ class _SectionApiEndpointOverrides(_Section):
   def __init__(self):
     super(_SectionApiEndpointOverrides, self).__init__(
         'api_endpoint_overrides', hidden=True)
+    self.accesscontextmanager = self._Add('accesscontextmanager')
     self.apikeys = self._Add('apikeys')
     self.appengine = self._Add('appengine')
     self.bigtableadmin = self._Add('bigtableadmin')
@@ -1436,6 +1430,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudkms = self._Add('cloudkms')
     self.cloudresourcemanager = self._Add('cloudresourcemanager')
     self.cloudresourcesearch = self._Add('cloudresourcesearch')
+    self.cloudscheduler = self._Add('cloudscheduler')
+    self.cloudtasks = self._Add('cloudtasks')
     self.composer = self._Add('composer')
     self.compute = self._Add('compute')
     self.container = self._Add('container')
@@ -1462,7 +1458,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.runtimeconfig = self._Add('runtimeconfig')
     self.redis = self._Add('redis')
-    self.serverless = self._Add('serverless')
+    # TODO(b/117986529): rename to 'run' once control plane finishes renaming,
+    # which will be reflected in third_party/apis/apis_map.py
+    self.run = self._Add('serverless')
     self.servicemanagement = self._Add('servicemanagement')
     self.serviceregistry = self._Add('serviceregistry')
     self.serviceuser = self._Add('serviceuser')
@@ -1560,9 +1558,7 @@ class _SectionStorage(_Section):
     super(_SectionStorage, self).__init__('storage')
     self.chunk_size = self._Add(
         'chunk_size',
-        # TODO(b/109938541): Update this to 104857600 which is gsutil's default
-        # chunksize (1024 * 1024 * 100)
-        default=1048576,  # Apitool's default chunksize
+        default=104857600,  # gsutil's default chunksize (1024 * 1024 * 100)
         help_text='Chunk size used for uploading and downloading from '
                   'Cloud Storage.')
     # TODO(b/109938541): Remove this after implementation seems stable.

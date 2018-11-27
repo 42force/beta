@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20180914",
+ "revision": "20181109",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -587,14 +587,37 @@
       ]
      }
     },
+    "network": {
+     "type": "string",
+     "description": "The URL of the network in which to reserve the address. This field can only be used with INTERNAL type with VPC_PEERING purpose."
+    },
     "networkTier": {
      "type": "string",
-     "description": "This signifies the networking tier used for configuring this Address and can only take the following values: PREMIUM , STANDARD.\n\nIf this field is not specified, it is assumed to be PREMIUM.",
+     "description": "This signifies the networking tier used for configuring this Address and can only take the following values: PREMIUM, STANDARD. Global forwarding rules can only be Premium Tier. Regional forwarding rules can be either Premium or Standard Tier. Standard Tier addresses applied to regional forwarding rules can be used with any external load balancer. Regional forwarding rules in Premium Tier can only be used with a Network load balancer.\n\nIf this field is not specified, it is assumed to be PREMIUM.",
      "enum": [
       "PREMIUM",
       "STANDARD"
      ],
      "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "prefixLength": {
+     "type": "integer",
+     "description": "The prefix length if the resource reprensents an IP range.",
+     "format": "int32"
+    },
+    "purpose": {
+     "type": "string",
+     "description": "The purpose of resource, only used with INTERNAL type.",
+     "enum": [
+      "DNS_RESOLVER",
+      "GCE_ENDPOINT",
+      "VPC_PEERING"
+     ],
+     "enumDescriptions": [
+      "",
       "",
       ""
      ]
@@ -1606,7 +1629,7 @@
     },
     "utilizationTargetType": {
      "type": "string",
-     "description": "Defines how target utilization value is expressed for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is GAUGE.",
+     "description": "Defines how target utilization value is expressed for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE.",
      "enum": [
       "DELTA_PER_MINUTE",
       "DELTA_PER_SECOND",
@@ -1662,7 +1685,7 @@
     },
     "group": {
      "type": "string",
-     "description": "The fully-qualified URL of a Instance Group resource. This instance group defines the list of instances that serve traffic. Member virtual machine instances from each instance group must live in the same zone as the instance group itself. No two backends in a backend service are allowed to use same Instance Group resource.\n\nNote that you must specify an Instance Group resource using the fully-qualified URL, rather than a partial URL.\n\nWhen the BackendService has load balancing scheme INTERNAL, the instance group must be within the same region as the BackendService."
+     "description": "The fully-qualified URL of an Instance Group or Network Endpoint Group resource. In case of instance group this defines the list of instances that serve traffic. Member virtual machine instances from each instance group must live in the same zone as the instance group itself. No two backends in a backend service are allowed to use same Instance Group resource.\n\nFor Network Endpoint Groups this defines list of endpoints. All endpoints of Network Endpoint Group must be hosted on instances located in the same zone as the Network Endpoint Group.\n\nBackend service can not contain mix of Instance Group and Network Endpoint Group backends.\n\nNote that you must specify an Instance Group or Network Endpoint Group resource using the fully-qualified URL, rather than a partial URL.\n\nWhen the BackendService has load balancing scheme INTERNAL, the instance group must be within the same region as the BackendService. Network Endpoint Groups are not supported for INTERNAL load balancing scheme."
     },
     "maxConnections": {
      "type": "integer",
@@ -1906,7 +1929,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a BackendService. An up-to-date fingerprint must be provided in order to update the BackendService.\n\nTo see the latest fingerprint, make a get() request to retrieve a BackendService.",
+     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a BackendService. An up-to-date fingerprint must be provided in order to update the BackendService, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve a BackendService.",
      "format": "byte"
     },
     "healthChecks": {
@@ -2154,6 +2177,7 @@
    "properties": {
     "healthStatus": {
      "type": "array",
+     "description": "Health state of the backend instances or endpoints in requested instance or network endpoint group, determined based on configured health checks.",
      "items": {
       "$ref": "HealthStatus"
      }
@@ -2960,7 +2984,7 @@
     },
     "labelFingerprint": {
      "type": "string",
-     "description": "A fingerprint for the labels being applied to this disk, which is essentially a hash of the labels set used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels.\n\nTo see the latest fingerprint, make a get() request to retrieve a disk.",
+     "description": "A fingerprint for the labels being applied to this disk, which is essentially a hash of the labels set used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve a disk.",
      "format": "byte"
     },
     "labels": {
@@ -3955,6 +3979,10 @@
      "description": "[Output Only] Type of the resource. Always compute#firewall for firewall rules.",
      "default": "compute#firewall"
     },
+    "logConfig": {
+     "$ref": "FirewallLogConfig",
+     "description": "This field denotes the logging options for a particular firewall rule. If logging is enabled, logs will be exported to Stackdriver."
+    },
     "name": {
      "type": "string",
      "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
@@ -4128,6 +4156,17 @@
     }
    }
   },
+  "FirewallLogConfig": {
+   "id": "FirewallLogConfig",
+   "type": "object",
+   "description": "The available logging options for a firewall rule.",
+   "properties": {
+    "enable": {
+     "type": "boolean",
+     "description": "This field denotes whether to enable logging for a particular firewall rule."
+    }
+   }
+  },
   "ForwardingRule": {
    "id": "ForwardingRule",
    "type": "object",
@@ -4234,7 +4273,7 @@
     },
     "ports": {
      "type": "array",
-     "description": "This field is used along with the backend_service field for internal load balancing.\n\nWhen the load balancing scheme is INTERNAL, a single port or a comma separated list of ports can be configured. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule.\n\nYou may specify a maximum of up to 5 ports.",
+     "description": "This field is used along with the backend_service field for internal load balancing.\n\nWhen the load balancing scheme is INTERNAL, a list of ports can be configured, for example, ['80'], ['8000','9000'] etc. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule.\n\nYou may specify a maximum of up to 5 ports.",
      "items": {
       "type": "string"
      }
@@ -4581,7 +4620,7 @@
    "properties": {
     "labelFingerprint": {
      "type": "string",
-     "description": "The fingerprint of the previous set of labels for this resource, used to detect conflicts. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash when updating or changing labels. Make a get() request to the resource to get the latest fingerprint.",
+     "description": "The fingerprint of the previous set of labels for this resource, used to detect conflicts. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash when updating or changing labels, otherwise the request will fail with error 412 conditionNotMet. Make a get() request to the resource to get the latest fingerprint.",
      "format": "byte"
     },
     "labels": {
@@ -5369,7 +5408,7 @@
     },
     "labelFingerprint": {
      "type": "string",
-     "description": "A fingerprint for the labels being applied to this image, which is essentially a hash of the labels used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels.\n\nTo see the latest fingerprint, make a get() request to retrieve an image.",
+     "description": "A fingerprint for the labels being applied to this image, which is essentially a hash of the labels used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve an image.",
      "format": "byte"
     },
     "labels": {
@@ -6206,7 +6245,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "Fingerprint of this resource. This field may be used in optimistic locking. It will be ignored when inserting an InstanceGroupManager. An up-to-date fingerprint must be provided in order to update the InstanceGroupManager.\n\nTo see the latest fingerprint, make a get() request to retrieve an InstanceGroupManager.",
+     "description": "Fingerprint of this resource. This field may be used in optimistic locking. It will be ignored when inserting an InstanceGroupManager. An up-to-date fingerprint must be provided in order to update the InstanceGroupManager, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve an InstanceGroupManager.",
      "format": "byte"
     },
     "id": {
@@ -6319,6 +6358,11 @@
     "restarting": {
      "type": "integer",
      "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be restarted or are currently being restarted.",
+     "format": "int32"
+    },
+    "verifying": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are being verified. See the managedInstances[].currentAction property in the listManagedInstances method documentation.",
      "format": "int32"
     }
    }
@@ -6976,7 +7020,7 @@
    "properties": {
     "fingerprint": {
      "type": "string",
-     "description": "The fingerprint of the named ports information for this instance group. Use this optional property to prevent conflicts when multiple users change the named ports settings concurrently. Obtain the fingerprint with the instanceGroups.get method. Then, include the fingerprint in your request to ensure that you do not overwrite changes that were applied from another concurrent request.",
+     "description": "The fingerprint of the named ports information for this instance group. Use this optional property to prevent conflicts when multiple users change the named ports settings concurrently. Obtain the fingerprint with the instanceGroups.get method. Then, include the fingerprint in your request to ensure that you do not overwrite changes that were applied from another concurrent request. A request with an incorrect fingerprint will fail with error 412 conditionNotMet.",
      "format": "byte"
     },
     "namedPorts": {
@@ -7846,7 +7890,7 @@
     },
     "bandwidth": {
      "type": "string",
-     "description": "Provisioned bandwidth capacity for the interconnectAttachment. Can be set by the partner to update the customer's provisioned bandwidth. Output only for for PARTNER type, mutable for PARTNER_PROVIDER, not available for DEDICATED.",
+     "description": "Provisioned bandwidth capacity for the interconnectAttachment. Can be set by the partner to update the customer's provisioned bandwidth. Output only for PARTNER type, mutable for PARTNER_PROVIDER and DEDICATED.",
      "enum": [
       "BPS_100M",
       "BPS_10G",
@@ -7967,7 +8011,7 @@
     },
     "router": {
      "type": "string",
-     "description": "URL of the cloud router to be used for dynamic routing. This router must be in the same region as this InterconnectAttachment. The InterconnectAttachment will automatically connect the Interconnect to the network & region within which the Cloud Router is configured."
+     "description": "URL of the Cloud Router to be used for dynamic routing. This router must be in the same region as this InterconnectAttachment. The InterconnectAttachment will automatically connect the Interconnect to the network & region within which the Cloud Router is configured."
     },
     "selfLink": {
      "type": "string",
@@ -8010,7 +8054,7 @@
     },
     "vlanTag8021q": {
      "type": "integer",
-     "description": "Available only for DEDICATED and PARTNER_PROVIDER. Desired VLAN tag for this attachment, in the range 2-4094. This field refers to 802.1q VLAN tag, also known as IEEE 802.1Q Only specified at creation time.",
+     "description": "The IEEE 802.1Q VLAN tag for this attachment, in the range 2-4094. Only specified at creation time.",
      "format": "int32"
     }
    }
@@ -8380,6 +8424,129 @@
     "googleDemarcId": {
      "type": "string",
      "description": "Google-side demarc ID for this circuit. Assigned at circuit turn-up and provided by Google to the customer in the LOA."
+    }
+   }
+  },
+  "InterconnectDiagnostics": {
+   "id": "InterconnectDiagnostics",
+   "type": "object",
+   "description": "Diagnostics information about interconnect, contains detailed and current technical information about Google?s side of the connection.",
+   "properties": {
+    "arpCaches": {
+     "type": "array",
+     "description": "A list of InterconnectDiagnostics.ARPEntry objects, describing individual neighbors currently seen by the Google router in the ARP cache for the Interconnect. This will be empty when the Interconnect is not bundled.",
+     "items": {
+      "$ref": "InterconnectDiagnosticsARPEntry"
+     }
+    },
+    "links": {
+     "type": "array",
+     "description": "A list of InterconnectDiagnostics.LinkStatus objects, describing the status for each link on the Interconnect.",
+     "items": {
+      "$ref": "InterconnectDiagnosticsLinkStatus"
+     }
+    },
+    "macAddress": {
+     "type": "string",
+     "description": "The MAC address of the Interconnect's bundle interface."
+    }
+   }
+  },
+  "InterconnectDiagnosticsARPEntry": {
+   "id": "InterconnectDiagnosticsARPEntry",
+   "type": "object",
+   "description": "Describing the ARP neighbor entries seen on this link",
+   "properties": {
+    "ipAddress": {
+     "type": "string",
+     "description": "The IP address of this ARP neighbor."
+    },
+    "macAddress": {
+     "type": "string",
+     "description": "The MAC address of this ARP neighbor."
+    }
+   }
+  },
+  "InterconnectDiagnosticsLinkLACPStatus": {
+   "id": "InterconnectDiagnosticsLinkLACPStatus",
+   "type": "object",
+   "properties": {
+    "googleSystemId": {
+     "type": "string",
+     "description": "System ID of the port on Google?s side of the LACP exchange."
+    },
+    "neighborSystemId": {
+     "type": "string",
+     "description": "System ID of the port on the neighbor?s side of the LACP exchange."
+    },
+    "state": {
+     "type": "string",
+     "enum": [
+      "ACTIVE",
+      "DETACHED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "InterconnectDiagnosticsLinkOpticalPower": {
+   "id": "InterconnectDiagnosticsLinkOpticalPower",
+   "type": "object",
+   "properties": {
+    "state": {
+     "type": "string",
+     "enum": [
+      "HIGH_ALARM",
+      "HIGH_WARNING",
+      "LOW_ALARM",
+      "LOW_WARNING",
+      "OK"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "value": {
+     "type": "number",
+     "description": "Value of the current optical power, read in dBm. Take a known good optical value, give it a 10% margin and trigger warnings relative to that value. In general, a -7dBm warning and a -11dBm alarm are good optical value estimates for most links.",
+     "format": "float"
+    }
+   }
+  },
+  "InterconnectDiagnosticsLinkStatus": {
+   "id": "InterconnectDiagnosticsLinkStatus",
+   "type": "object",
+   "properties": {
+    "arpCaches": {
+     "type": "array",
+     "description": "A list of InterconnectDiagnostics.ARPEntry objects, describing the ARP neighbor entries seen on this link. This will be empty if the link is bundled",
+     "items": {
+      "$ref": "InterconnectDiagnosticsARPEntry"
+     }
+    },
+    "circuitId": {
+     "type": "string",
+     "description": "The unique ID for this link assigned during turn up by Google."
+    },
+    "googleDemarc": {
+     "type": "string",
+     "description": "The Demarc address assigned by Google and provided in the LoA."
+    },
+    "lacpStatus": {
+     "$ref": "InterconnectDiagnosticsLinkLACPStatus"
+    },
+    "receivingOpticalPower": {
+     "$ref": "InterconnectDiagnosticsLinkOpticalPower"
+    },
+    "transmittingOpticalPower": {
+     "$ref": "InterconnectDiagnosticsLinkOpticalPower"
     }
    }
   },
@@ -8804,6 +8971,16 @@
       "",
       ""
      ]
+    }
+   }
+  },
+  "InterconnectsGetDiagnosticsResponse": {
+   "id": "InterconnectsGetDiagnosticsResponse",
+   "type": "object",
+   "description": "Response for the InterconnectsGetDiagnosticsRequest.",
+   "properties": {
+    "result": {
+     "$ref": "InterconnectDiagnostics"
     }
    }
   },
@@ -9484,9 +9661,11 @@
       "NONE",
       "RECREATING",
       "REFRESHING",
-      "RESTARTING"
+      "RESTARTING",
+      "VERIFYING"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -9576,7 +9755,7 @@
    "properties": {
     "fingerprint": {
      "type": "string",
-     "description": "Specifies a fingerprint for this request, which is essentially a hash of the metadata's contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata.\n\nTo see the latest fingerprint, make a get() request to retrieve the resource.",
+     "description": "Specifies a fingerprint for this request, which is essentially a hash of the metadata's contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve the resource.",
      "format": "byte"
     },
     "items": {
@@ -9635,7 +9814,7 @@
   "Network": {
    "id": "Network",
    "type": "object",
-   "description": "Represents a Network resource. Read Networks and Firewalls for more information. (== resource_for v1.networks ==) (== resource_for beta.networks ==)",
+   "description": "Represents a Network resource. Read Virtual Private Cloud (VPC) Network Overview for more information. (== resource_for v1.networks ==) (== resource_for beta.networks ==)",
    "properties": {
     "IPv4Range": {
      "type": "string",
@@ -9644,7 +9823,7 @@
     },
     "autoCreateSubnetworks": {
      "type": "boolean",
-     "description": "When set to true, the network is created in \"auto subnet mode\". When set to false, the network is in \"custom subnet mode\".\n\nIn \"auto subnet mode\", a newly created network is assigned the default CIDR of 10.128.0.0/9 and it automatically creates one subnetwork per region."
+     "description": "When set to true, the VPC network is created in \"auto\" mode. When set to false, the VPC network is created in \"custom\" mode.\n\nAn auto mode VPC network starts with one subnet per region. Each subnet has a predetermined range as described in Auto mode VPC network IP ranges."
     },
     "creationTimestamp": {
      "type": "string",
@@ -9656,7 +9835,7 @@
     },
     "gatewayIPv4": {
      "type": "string",
-     "description": "A gateway address for default routing to other networks. This value is read only and is selected by the Google Compute Engine, typically as the first usable address in the IPv4Range.",
+     "description": "[Output Only] The gateway address for default routing out of the network. This value is read only and is selected by GCP.",
      "pattern": "[0-9]{1,3}(?:\\.[0-9]{1,3}){3}"
     },
     "id": {
@@ -9696,7 +9875,7 @@
     },
     "subnetworks": {
      "type": "array",
-     "description": "[Output Only] Server-defined fully-qualified URLs for all subnetworks in this network.",
+     "description": "[Output Only] Server-defined fully-qualified URLs for all subnetworks in this VPC network.",
      "items": {
       "type": "string"
      }
@@ -9724,7 +9903,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "Fingerprint hash of contents stored in this network interface. This field will be ignored when inserting an Instance or adding a NetworkInterface. An up-to-date fingerprint must be provided in order to update the NetworkInterface.",
+     "description": "Fingerprint hash of contents stored in this network interface. This field will be ignored when inserting an Instance or adding a NetworkInterface. An up-to-date fingerprint must be provided in order to update the NetworkInterface, otherwise the request will fail with error 412 conditionNotMet.",
      "format": "byte"
     },
     "kind": {
@@ -9869,7 +10048,7 @@
    "properties": {
     "autoCreateRoutes": {
      "type": "boolean",
-     "description": "Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
+     "description": "Indicates whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
     },
     "name": {
      "type": "string",
@@ -9904,7 +10083,7 @@
    "properties": {
     "routingMode": {
      "type": "string",
-     "description": "The network-wide routing mode to use. If set to REGIONAL, this network's cloud routers will only advertise routes with subnetworks of this network in the same region as the router. If set to GLOBAL, this network's cloud routers will advertise routes with all subnetworks of this network, across regions.",
+     "description": "The network-wide routing mode to use. If set to REGIONAL, this network's cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this network's cloud routers will advertise routes with all subnets of this network, across regions.",
      "enum": [
       "GLOBAL",
       "REGIONAL"
@@ -10259,9 +10438,11 @@
       "CREATING",
       "DELETING",
       "INVALID",
-      "READY"
+      "READY",
+      "REPAIRING"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -10533,7 +10714,7 @@
     },
     "name": {
      "type": "string",
-     "description": "The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last charaicter, which cannot be a dash."
+     "description": "The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash."
     },
     "nodeAffinityLabels": {
      "type": "object",
@@ -11834,7 +12015,7 @@
    "properties": {
     "defaultService": {
      "type": "string",
-     "description": "The full or partial URL to the BackendService resource. This will be used if none of the pathRules defined by this PathMatcher is matched by the URL's path portion. For example, the following are all valid URLs to a BackendService resource:  \n- https://www.googleapis.com/compute/v1/projects/project/global/backendServices/backendService \n- compute/v1/projects/project/global/backendServices/backendService \n- global/backendServices/backendService"
+     "description": "The full or partial URL to the BackendService resource. This will be used if none of the pathRules or routeRules defined by this PathMatcher are matched. For example, the following are all valid URLs to a BackendService resource:  \n- https://www.googleapis.com/compute/v1/projects/project/global/backendServices/backendService \n- compute/v1/projects/project/global/backendServices/backendService \n- global/backendServices/backendService  \nUse defaultService instead of defaultRouteAction when simple routing to a backend service is desired and other advanced capabilities like traffic splitting and URL rewrites are not required.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect must be set.\nAuthorization requires one or more of the following Google IAM permissions on the specified resource default_service:  \n- compute.backendBuckets.use \n- compute.backendServices.use"
     },
     "description": {
      "type": "string",
@@ -11846,7 +12027,7 @@
     },
     "pathRules": {
      "type": "array",
-     "description": "The list of path rules.",
+     "description": "The list of path rules. Use this list instead of routeRules when routing based on simple path matching is all that's required. The order by which path rules are specified does not matter. Matches are always done on the longest-path-first basis.\nFor example: a pathRule with a path /a/b/c/* will match before /a/b/* irrespective of the order in which those paths appear in this list.\nOnly one of pathRules or routeRules must be set.",
      "items": {
       "$ref": "PathRule"
      }
@@ -11867,7 +12048,7 @@
     },
     "service": {
      "type": "string",
-     "description": "The URL of the BackendService resource if this rule is matched."
+     "description": "The URL of the backend service resource if this rule is matched.\nUse service instead of routeAction when simple routing to a backend service is desired and other advanced capabilities like traffic splitting and rewrites are not required.\nOnly one of service, routeAction or urlRedirect should must be set."
     }
    }
   },
@@ -12068,6 +12249,8 @@
       "NVIDIA_P100_VWS_GPUS",
       "NVIDIA_P4_GPUS",
       "NVIDIA_P4_VWS_GPUS",
+      "NVIDIA_T4_GPUS",
+      "NVIDIA_T4_VWS_GPUS",
       "NVIDIA_V100_GPUS",
       "PREEMPTIBLE_CPUS",
       "PREEMPTIBLE_LOCAL_SSD_GB",
@@ -12076,6 +12259,8 @@
       "PREEMPTIBLE_NVIDIA_P100_VWS_GPUS",
       "PREEMPTIBLE_NVIDIA_P4_GPUS",
       "PREEMPTIBLE_NVIDIA_P4_VWS_GPUS",
+      "PREEMPTIBLE_NVIDIA_T4_GPUS",
+      "PREEMPTIBLE_NVIDIA_T4_VWS_GPUS",
       "PREEMPTIBLE_NVIDIA_V100_GPUS",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
@@ -12097,9 +12282,15 @@
       "TARGET_TCP_PROXIES",
       "TARGET_VPN_GATEWAYS",
       "URL_MAPS",
+      "VPN_GATEWAYS",
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -13108,7 +13299,7 @@
    "properties": {
     "group": {
      "type": "string",
-     "description": "A URI referencing one of the instance groups listed in the backend service."
+     "description": "A URI referencing one of the instance groups or network endpoint groups listed in the backend service."
     }
    }
   },
@@ -13462,6 +13653,13 @@
       ]
      }
     },
+    "nats": {
+     "type": "array",
+     "description": "A list of Nat services created in this router.",
+     "items": {
+      "$ref": "RouterNat"
+     }
+    },
     "network": {
      "type": "string",
      "description": "URI of the network to which this router belongs.",
@@ -13703,7 +13901,7 @@
     },
     "managementType": {
      "type": "string",
-     "description": "[Output Only] Type of how the resource/configuration of the BGP peer is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT represents an BGP peer that is automatically created for PARTNER interconnectAttachment, Google will automatically create/delete this type of BGP peer when the PARTNER interconnectAttachment is created/deleted.",
+     "description": "[Output Only] The resource that configures and manages this BGP peer. MANAGED_BY_USER is the default value and can be managed by you or other users; MANAGED_BY_ATTACHMENT is a BGP peer that is configured and managed by Cloud Interconnect, specifically by an InterconnectAttachment of type PARTNER. Google will automatically create, update, and delete this type of BGP peer when the PARTNER InterconnectAttachment is created, updated, or deleted.",
      "enum": [
       "MANAGED_BY_ATTACHMENT",
       "MANAGED_BY_USER"
@@ -13747,7 +13945,7 @@
     },
     "managementType": {
      "type": "string",
-     "description": "[Output Only] Type of how the resource/configuration of the interface is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT represents an interface that is automatically created for PARTNER type interconnectAttachment, Google will automatically create/update/delete this type of interface when the PARTNER interconnectAttachment is created/provisioned/deleted.",
+     "description": "[Output Only] The resource that configures and manages this interface. MANAGED_BY_USER is the default value and can be managed by you or other users; MANAGED_BY_ATTACHMENT is an interface that is configured and managed by Cloud Interconnect, specifically by an InterconnectAttachment of type PARTNER. Google will automatically create, update, and delete this type of interface when the PARTNER InterconnectAttachment is created, updated, or deleted.",
      "enum": [
       "MANAGED_BY_ATTACHMENT",
       "MANAGED_BY_USER"
@@ -13876,6 +14074,118 @@
     }
    }
   },
+  "RouterNat": {
+   "id": "RouterNat",
+   "type": "object",
+   "description": "Represents a Nat resource. It enables the VMs within the specified subnetworks to access Internet without external IP addresses. It specifies a list of subnetworks (and the ranges within) that want to use NAT. Customers can also provide the external IPs that would be used for NAT. GCP would auto-allocate ephemeral IPs if no external IPs are provided.",
+   "properties": {
+    "icmpIdleTimeoutSec": {
+     "type": "integer",
+     "description": "Timeout (in seconds) for ICMP connections. Defaults to 30s if not set.",
+     "format": "int32"
+    },
+    "minPortsPerVm": {
+     "type": "integer",
+     "description": "Minimum number of ports allocated to a VM from this NAT config. If not set, a default number of ports is allocated to a VM. This gets rounded up to the nearest power of 2. Eg. if the value of this field is 50, at least 64 ports will be allocated to a VM.",
+     "format": "int32"
+    },
+    "name": {
+     "type": "string",
+     "description": "Unique name of this Nat service. The name must be 1-63 characters long and comply with RFC1035.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "natIpAllocateOption": {
+     "type": "string",
+     "description": "Specify the NatIpAllocateOption. If it is AUTO_ONLY, then nat_ip should be empty.",
+     "enum": [
+      "AUTO_ONLY",
+      "MANUAL_ONLY"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "natIps": {
+     "type": "array",
+     "description": "A list of URLs of the IP resources used for this Nat service. These IPs must be valid static external IP addresses assigned to the project. max_length is subject to change post alpha.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "sourceSubnetworkIpRangesToNat": {
+     "type": "string",
+     "description": "Specify the Nat option. If this field contains ALL_SUBNETWORKS_ALL_IP_RANGES or ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any other Router.Nat section in any Router for this network in this region.",
+     "enum": [
+      "ALL_SUBNETWORKS_ALL_IP_RANGES",
+      "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES",
+      "LIST_OF_SUBNETWORKS"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "subnetworks": {
+     "type": "array",
+     "description": "A list of Subnetwork resources whose traffic should be translated by NAT Gateway. It is used only when LIST_OF_SUBNETWORKS is selected for the SubnetworkIpRangeToNatOption above.",
+     "items": {
+      "$ref": "RouterNatSubnetworkToNat"
+     }
+    },
+    "tcpEstablishedIdleTimeoutSec": {
+     "type": "integer",
+     "description": "Timeout (in seconds) for TCP established connections. Defaults to 1200s if not set.",
+     "format": "int32"
+    },
+    "tcpTransitoryIdleTimeoutSec": {
+     "type": "integer",
+     "description": "Timeout (in seconds) for TCP transitory connections. Defaults to 30s if not set.",
+     "format": "int32"
+    },
+    "udpIdleTimeoutSec": {
+     "type": "integer",
+     "description": "Timeout (in seconds) for UDP connections. Defaults to 30s if not set.",
+     "format": "int32"
+    }
+   }
+  },
+  "RouterNatSubnetworkToNat": {
+   "id": "RouterNatSubnetworkToNat",
+   "type": "object",
+   "description": "Defines the IP ranges that want to use NAT for a subnetwork.",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "URL for the subnetwork resource to use NAT."
+    },
+    "secondaryIpRangeNames": {
+     "type": "array",
+     "description": "A list of the secondary ranges of the Subnetwork that are allowed to use NAT. This can be populated only if \"LIST_OF_SECONDARY_IP_RANGES\" is one of the values in source_ip_ranges_to_nat.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "sourceIpRangesToNat": {
+     "type": "array",
+     "description": "Specify the options for NAT ranges in the Subnetwork. All usages of single value are valid except NAT_IP_RANGE_OPTION_UNSPECIFIED. The only valid option with multiple values is: [\"PRIMARY_IP_RANGE\", \"LIST_OF_SECONDARY_IP_RANGES\"] Default: [ALL_IP_RANGES]",
+     "items": {
+      "type": "string",
+      "enum": [
+       "ALL_IP_RANGES",
+       "LIST_OF_SECONDARY_IP_RANGES",
+       "PRIMARY_IP_RANGE"
+      ],
+      "enumDescriptions": [
+       "",
+       "",
+       ""
+      ]
+     }
+    }
+   }
+  },
   "RouterStatus": {
    "id": "RouterStatus",
    "type": "object",
@@ -13898,6 +14208,12 @@
      "type": "array",
      "items": {
       "$ref": "RouterStatusBgpPeerStatus"
+     }
+    },
+    "natStatus": {
+     "type": "array",
+     "items": {
+      "$ref": "RouterStatusNatStatus"
      }
     },
     "network": {
@@ -13963,6 +14279,48 @@
     "uptimeSeconds": {
      "type": "string",
      "description": "Time this session has been up, in seconds. Format: 145"
+    }
+   }
+  },
+  "RouterStatusNatStatus": {
+   "id": "RouterStatusNatStatus",
+   "type": "object",
+   "description": "Status of a NAT contained in this router.",
+   "properties": {
+    "autoAllocatedNatIps": {
+     "type": "array",
+     "description": "A list of IPs auto-allocated for NAT. Example: [\"1.1.1.1\", \"129.2.16.89\"]",
+     "items": {
+      "type": "string"
+     }
+    },
+    "minExtraNatIpsNeeded": {
+     "type": "integer",
+     "description": "The number of extra IPs to allocate. This will be greater than 0 only if user-specified IPs are NOT enough to allow all configured VMs to use NAT. This value is meaningful only when auto-allocation of NAT IPs is *not* used.",
+     "format": "int32"
+    },
+    "name": {
+     "type": "string",
+     "description": "Unique name of this NAT."
+    },
+    "numVmEndpointsWithNatMappings": {
+     "type": "integer",
+     "description": "Number of VM endpoints (i.e., Nics) that can use NAT.",
+     "format": "int32"
+    },
+    "userAllocatedNatIpResources": {
+     "type": "array",
+     "description": "A list of fully qualified URLs of reserved IP address resources.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "userAllocatedNatIps": {
+     "type": "array",
+     "description": "A list of IPs user-allocated for NAT. They will be raw IP strings like \"179.12.26.133\".",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -14200,7 +14558,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "Specifies a fingerprint for this resource, which is essentially a hash of the metadata's contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata.\n\nTo see the latest fingerprint, make get() request to the security policy.",
+     "description": "Specifies a fingerprint for this resource, which is essentially a hash of the metadata's contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make get() request to the security policy.",
      "format": "byte"
     },
     "id": {
@@ -14508,7 +14866,7 @@
     },
     "labelFingerprint": {
      "type": "string",
-     "description": "A fingerprint for the labels being applied to this snapshot, which is essentially a hash of the labels set used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels.\n\nTo see the latest fingerprint, make a get() request to retrieve a snapshot.",
+     "description": "A fingerprint for the labels being applied to this snapshot, which is essentially a hash of the labels set used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve a snapshot.",
      "format": "byte"
     },
     "labels": {
@@ -15027,7 +15385,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a SslPolicy. An up-to-date fingerprint must be provided in order to update the SslPolicy.\n\nTo see the latest fingerprint, make a get() request to retrieve an SslPolicy.",
+     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a SslPolicy. An up-to-date fingerprint must be provided in order to update the SslPolicy, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve an SslPolicy.",
      "format": "byte"
     },
     "id": {
@@ -15194,7 +15552,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a Subnetwork. An up-to-date fingerprint must be provided in order to update the Subnetwork.\n\nTo see the latest fingerprint, make a get() request to retrieve a Subnetwork.",
+     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a Subnetwork. An up-to-date fingerprint must be provided in order to update the Subnetwork, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve a Subnetwork.",
      "format": "byte"
     },
     "gatewayAddress": {
@@ -15882,7 +16240,7 @@
     },
     "sslCertificates": {
      "type": "array",
-     "description": "URLs to SslCertificate resources that are used to authenticate connections between users and the load balancer. Currently, exactly one SSL certificate must be specified.",
+     "description": "URLs to SslCertificate resources that are used to authenticate connections between users and the load balancer. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates.",
      "items": {
       "type": "string"
      }
@@ -16440,7 +16798,7 @@
     },
     "sessionAffinity": {
      "type": "string",
-     "description": "Sesssion affinity option, must be one of the following values:\nNONE: Connections from the same client IP may go to any instance in the pool.\nCLIENT_IP: Connections from the same client IP will go to the same instance in the pool while that instance remains healthy.\nCLIENT_IP_PROTO: Connections from the same client IP with the same IP protocol will go to the same instance in the pool while that instance remains healthy.",
+     "description": "Session affinity option, must be one of the following values:\nNONE: Connections from the same client IP may go to any instance in the pool.\nCLIENT_IP: Connections from the same client IP will go to the same instance in the pool while that instance remains healthy.\nCLIENT_IP_PROTO: Connections from the same client IP with the same IP protocol will go to the same instance in the pool while that instance remains healthy.",
      "enum": [
       "CLIENT_IP",
       "CLIENT_IP_PORT_PROTO",
@@ -16945,7 +17303,7 @@
     },
     "sslCertificates": {
      "type": "array",
-     "description": "URLs to SslCertificate resources that are used to authenticate connections to Backends. Currently exactly one SSL certificate must be specified.",
+     "description": "URLs to SslCertificate resources that are used to authenticate connections to Backends. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates.",
      "items": {
       "type": "string"
      }
@@ -17713,7 +18071,7 @@
     },
     "defaultService": {
      "type": "string",
-     "description": "The URL of the BackendService resource if none of the hostRules match."
+     "description": "The URL of the backendService resource if none of the hostRules match.\nUse defaultService instead of defaultRouteAction when simple routing to a backendService is desired and other advanced capabilities like traffic splitting and rewrites are not required.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect should must be set."
     },
     "description": {
      "type": "string",
@@ -17721,7 +18079,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a UrlMap. An up-to-date fingerprint must be provided in order to update the UrlMap.\n\nTo see the latest fingerprint, make a get() request to retrieve a UrlMap.",
+     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a UrlMap. An up-to-date fingerprint must be provided in order to update the UrlMap, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve a UrlMap.",
      "format": "byte"
     },
     "hostRules": {
@@ -18120,6 +18478,162 @@
     "reportNamePrefix": {
      "type": "string",
      "description": "An optional prefix for the name of the usage report object stored in bucketName. If not supplied, defaults to usage. The report is stored as a CSV file named report_name_prefix_gce_YYYYMMDD.csv where YYYYMMDD is the day of the usage according to Pacific Time. If you supply a prefix, it should conform to Cloud Storage object naming conventions."
+    }
+   }
+  },
+  "VmEndpointNatMappings": {
+   "id": "VmEndpointNatMappings",
+   "type": "object",
+   "description": "Contain information of Nat mapping for a VM endpoint (i.e., NIC).",
+   "properties": {
+    "instanceName": {
+     "type": "string",
+     "description": "Name of the VM instance which the endpoint belongs to"
+    },
+    "interfaceNatMappings": {
+     "type": "array",
+     "items": {
+      "$ref": "VmEndpointNatMappingsInterfaceNatMappings"
+     }
+    }
+   }
+  },
+  "VmEndpointNatMappingsInterfaceNatMappings": {
+   "id": "VmEndpointNatMappingsInterfaceNatMappings",
+   "type": "object",
+   "description": "Contain information of Nat mapping for an interface of this endpoint.",
+   "properties": {
+    "natIpPortRanges": {
+     "type": "array",
+     "description": "A list of all IP:port-range mappings assigned to this interface. These ranges are inclusive, that is, both the first and the last ports can be used for NAT. Example: [\"2.2.2.2:12345-12355\", \"1.1.1.1:2234-2234\"].",
+     "items": {
+      "type": "string"
+     }
+    },
+    "numTotalNatPorts": {
+     "type": "integer",
+     "description": "Total number of ports across all NAT IPs allocated to this interface. It equals to the aggregated port number in the field nat_ip_port_ranges.",
+     "format": "int32"
+    },
+    "sourceAliasIpRange": {
+     "type": "string",
+     "description": "Alias IP range for this interface endpoint. It will be a private (RFC 1918) IP range. Examples: \"10.33.4.55/32\", or \"192.168.5.0/24\"."
+    },
+    "sourceVirtualIp": {
+     "type": "string",
+     "description": "Primary IP of the VM for this NIC."
+    }
+   }
+  },
+  "VmEndpointNatMappingsList": {
+   "id": "VmEndpointNatMappingsList",
+   "type": "object",
+   "description": "Contains a list of VmEndpointNatMappings.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#vmEndpointNatMappingsList for lists of Nat mappings of VM endpoints.",
+     "default": "compute#vmEndpointNatMappingsList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "result": {
+     "type": "array",
+     "description": "[Output Only] A list of Nat mapping information of VM endpoints.",
+     "items": {
+      "$ref": "VmEndpointNatMappings"
+     }
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
     }
    }
   },
@@ -20110,7 +20624,7 @@
      "id": "compute.backendServices.get",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "GET",
-     "description": "Returns the specified BackendService resource. Gets a list of available backend services by making a list() request.",
+     "description": "Returns the specified BackendService resource. Gets a list of available backend services.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -20593,9 +21107,9 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name of the persistent disk to snapshot.",
+       "description": "Name or id of the persistent disk to snapshot.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "guestFlush": {
@@ -20646,7 +21160,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name of the persistent disk to delete.",
+       "description": "Name or id of the persistent disk to delete.",
        "required": true,
        "location": "path"
       },
@@ -20691,9 +21205,9 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name of the persistent disk to return.",
+       "description": "Name or id of the persistent disk to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -20836,9 +21350,9 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The name of the persistent disk.",
+       "description": "The name or id of the persistent disk.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -22709,9 +23223,9 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Name of the image resource to delete.",
+       "description": "Name or id of the image resource to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -22747,9 +23261,9 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Image name.",
+       "description": "Image name or id .",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -22788,9 +23302,9 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Name of the image resource to return.",
+       "description": "Name or id of the image resource to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -22822,9 +23336,9 @@
      "parameters": {
       "family": {
        "type": "string",
-       "description": "Name of the image family to search for.",
+       "description": "Name or id of the image family to search for.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -22982,7 +23496,7 @@
      "id": "compute.instanceGroupManagers.abandonInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/abandonInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "description": "Flags the specified instances to be removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -23122,7 +23636,7 @@
      "id": "compute.instanceGroupManagers.deleteInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/deleteInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "description": "Flags the specified instances in the managed instance group for immediate deletion. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -23209,7 +23723,7 @@
      "id": "compute.instanceGroupManagers.insert",
      "path": "{project}/zones/{zone}/instanceGroupManagers",
      "httpMethod": "POST",
-     "description": "Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.\n\nA managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.",
+     "description": "Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.\n\nA managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.",
      "parameters": {
       "project": {
        "type": "string",
@@ -23368,7 +23882,7 @@
      "id": "compute.instanceGroupManagers.recreateInstances",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/recreateInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "description": "Flags the specified instances in the managed instance group to be immediately recreated. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -23415,7 +23929,7 @@
      "id": "compute.instanceGroupManagers.resize",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resize",
      "httpMethod": "POST",
-     "description": "Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.",
+     "description": "Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.\n\nWhen resizing down, the instance group arbitrarily chooses the order in which VMs are deleted. The group takes into account some VM attributes when making the selection including:\n\n+ The status of the VM instance. + The health of the VM instance. + The instance template version the VM is based on. + For regional managed instance groups, the location of the VM instance.\n\nThis list is subject to change.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -24167,9 +24681,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -24277,9 +24791,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -24326,9 +24840,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to delete.",
+       "description": "Name or id of the instance resource to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -24378,9 +24892,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -24432,15 +24946,15 @@
      "parameters": {
       "deviceName": {
        "type": "string",
-       "description": "Disk device name to detach.",
+       "description": "The device name of the disk to detach. Make a get() request on the instance to view currently attached disks and device names.",
        "required": true,
        "location": "query"
       },
       "instance": {
        "type": "string",
-       "description": "Instance name.",
+       "description": "Instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -24485,7 +24999,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to return.",
+       "description": "Name or id of the instance resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24527,9 +25041,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "port": {
@@ -24683,7 +25197,7 @@
      "id": "compute.instances.listReferrers",
      "path": "{project}/zones/{zone}/instances/{instance}/referrers",
      "httpMethod": "GET",
-     "description": "Retrieves the list of referrers to instances contained within the specified zone.",
+     "description": "Retrieves the list of referrers to instances contained within the specified zone. For more information, read Viewing Referrers to VM Instances.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -24692,9 +25206,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
+       "description": "Name or id of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
        "required": true,
-       "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "maxResults": {
@@ -24752,9 +25266,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -24816,9 +25330,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "zone": {
@@ -24856,16 +25370,16 @@
       },
       "deviceName": {
        "type": "string",
-       "description": "The device name of the disk to modify.",
+       "description": "The device name of the disk to modify. Make a get() request on the instance to view currently attached disks and device names.",
        "required": true,
        "pattern": "\\w[\\w.-]{0,254}",
        "location": "query"
       },
       "instance": {
        "type": "string",
-       "description": "The instance name.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -24911,9 +25425,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -24960,9 +25474,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25009,9 +25523,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25058,9 +25572,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25107,9 +25621,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25156,9 +25670,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Instance name.",
+       "description": "Instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25205,9 +25719,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25250,13 +25764,13 @@
      "id": "compute.instances.setTags",
      "path": "{project}/zones/{zone}/instances/{instance}/setTags",
      "httpMethod": "POST",
-     "description": "Sets tags for the specified instance to the data included in the request.",
+     "description": "Sets network tags for the specified instance to the data included in the request.",
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25303,9 +25817,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25344,9 +25858,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25390,9 +25904,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25439,9 +25953,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to stop.",
+       "description": "Name or id of the instance resource to stop.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25485,9 +25999,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -25541,9 +26055,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -26040,6 +26554,40 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getDiagnostics": {
+     "id": "compute.interconnects.getDiagnostics",
+     "path": "{project}/global/interconnects/{interconnect}/getDiagnostics",
+     "httpMethod": "GET",
+     "description": "Returns the interconnectDiagnostics for the specified interconnect.",
+     "parameters": {
+      "interconnect": {
+       "type": "string",
+       "description": "Name of the interconnect resource to query.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "interconnect"
+     ],
+     "response": {
+      "$ref": "InterconnectsGetDiagnosticsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.interconnects.insert",
      "path": "{project}/global/interconnects",
@@ -26216,9 +26764,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -26414,9 +26962,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "(?:[-a-z0-9_]{0,62}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -26919,7 +27467,7 @@
      "parameters": {
       "nodeGroup": {
        "type": "string",
-       "description": "Name of the NodeGroup resource to delete.",
+       "description": "Name of the NodeGroup resource.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -29129,9 +29677,9 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name of the regional persistent disk to snapshot.",
+       "description": "Name or id of the regional persistent disk to snapshot.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29178,7 +29726,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name of the regional persistent disk to delete.",
+       "description": "Name or id of the regional persistent disk to delete.",
        "required": true,
        "location": "path"
       },
@@ -29223,9 +29771,9 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name of the regional persistent disk to return.",
+       "description": "Name or id of the regional persistent disk to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29368,9 +29916,9 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name of the regional persistent disk.",
+       "description": "Name or id of the regional persistent disk.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29480,9 +30028,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -29511,7 +30059,7 @@
      "id": "compute.regionInstanceGroupManagers.abandonInstances",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/abandonInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to remove the specified instances from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "description": "Flags the specified instances to be immediately removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -29602,7 +30150,7 @@
      "id": "compute.regionInstanceGroupManagers.deleteInstances",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/deleteInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to delete the specified instances in the managed instance group. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "description": "Flags the specified instances in the managed instance group to be immediately deleted. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. The deleteInstances operation is marked DONE if the deleteInstances request is successful. The underlying actions take additional time. You must separately verify the status of the deleting action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -29689,7 +30237,7 @@
      "id": "compute.regionInstanceGroupManagers.insert",
      "path": "{project}/regions/{region}/instanceGroupManagers",
      "httpMethod": "POST",
-     "description": "Creates a managed instance group using the information that you specify in the request. After the group is created, it schedules an action to create instances in the group using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.\n\nA regional managed instance group can contain up to 2000 instances.",
+     "description": "Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.\n\nA regional managed instance group can contain up to 2000 instances.",
      "parameters": {
       "project": {
        "type": "string",
@@ -29848,7 +30396,7 @@
      "id": "compute.regionInstanceGroupManagers.recreateInstances",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/recreateInstances",
      "httpMethod": "POST",
-     "description": "Schedules a group action to recreate the specified instances in the managed instance group. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the action is scheduled even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "description": "Flags the specified instances in the managed instance group to be immediately recreated. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.\n\nYou can specify a maximum of 1000 instances with this method per request.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -29895,7 +30443,7 @@
      "id": "compute.regionInstanceGroupManagers.resize",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resize",
      "httpMethod": "POST",
-     "description": "Changes the intended size for the managed instance group. If you increase the size, the group schedules actions to create new instances using the current instance template. If you decrease the size, the group schedules delete actions on one or more instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.",
+     "description": "Changes the intended size of the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes one or more instances.\n\nThe resize operation is marked DONE if the resize request is successful. The underlying actions take additional time. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -30613,6 +31161,71 @@
      ],
      "response": {
       "$ref": "Router"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getNatMappingInfo": {
+     "id": "compute.routers.getNatMappingInfo",
+     "path": "{project}/regions/{region}/routers/{router}/getNatMappingInfo",
+     "httpMethod": "GET",
+     "description": "Retrieves runtime Nat mapping information of VM endpoints.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "router": {
+       "type": "string",
+       "description": "Name of the Router resource to query for Nat Mapping information of VM endpoints.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "router"
+     ],
+     "response": {
+      "$ref": "VmEndpointNatMappingsList"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -31425,7 +32038,7 @@
      "id": "compute.snapshots.delete",
      "path": "{project}/global/snapshots/{snapshot}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.\n\nFor more information, see Deleting snaphots.",
+     "description": "Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.\n\nFor more information, see Deleting snapshots.",
      "parameters": {
       "project": {
        "type": "string",
@@ -31441,9 +32054,9 @@
       },
       "snapshot": {
        "type": "string",
-       "description": "Name of the Snapshot resource to delete.",
+       "description": "Name or id of the Snapshot resource to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -31474,9 +32087,9 @@
       },
       "snapshot": {
        "type": "string",
-       "description": "Name of the Snapshot resource to return.",
+       "description": "Name or id of the Snapshot resource to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -32322,7 +32935,7 @@
      "id": "compute.subnetworks.patch",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.",
      "parameters": {
       "project": {
        "type": "string",

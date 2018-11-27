@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Kubernetes Engine API",
-  "description": "The Google Kubernetes Engine API is used for building and managing container based applications, powered by the open source Kubernetes technology.",
+  "description": "Builds and manages container-based applications, powered by the open source Kubernetes technology.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -153,7 +153,7 @@
           "$ref": "NodeConfig"
         },
         "masterAuth": {
-          "description": "The authentication information for accessing the master endpoint.",
+          "description": "The authentication information for accessing the master endpoint.\nIf unspecified, the defaults are used:\nFor clusters before v1.12, if master_auth is unspecified, `username` will\nbe set to \"admin\", a random password will be generated, and a client\ncertificate will be issued.",
           "$ref": "MasterAuth"
         },
         "loggingService": {
@@ -188,7 +188,7 @@
           }
         },
         "locations": {
-          "description": "The list of Google Compute Engine\n[locations](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located.",
+          "description": "The list of Google Compute Engine\n[zones](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located.",
           "type": "array",
           "items": {
             "type": "string"
@@ -374,7 +374,7 @@
           }
         },
         "currentNodeCount": {
-          "description": "[Output only] The number of nodes currently in the cluster.",
+          "description": "[Output only]  The number of nodes currently in the cluster. Deprecated.\nCall Kubernetes API directly to retrieve node information.",
           "type": "integer",
           "format": "int32"
         },
@@ -404,6 +404,10 @@
           "items": {
             "$ref": "StatusCondition"
           }
+        },
+        "resourceVersion": {
+          "description": "Server-defined resource version (etag).",
+          "type": "string"
         }
       }
     },
@@ -647,7 +651,7 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "The username to use for HTTP basic authentication to the master endpoint.\nFor clusters v1.6.0 and later, you can disable basic authentication by\nproviding an empty username.",
+          "description": "The username to use for HTTP basic authentication to the master endpoint.\nFor clusters v1.6.0 and later, basic authentication can be disabled by\nleaving username unspecified (or setting it to the empty string).",
           "type": "string"
         },
         "password": {
@@ -709,8 +713,12 @@
           "$ref": "IstioConfig"
         },
         "serverlessConfig": {
-          "description": "Configuration for the serverless addon. The `IstioConfig` addon must be\nenabled in order to enable serverless. This option can only be enabled at\ncluster creation time.",
+          "description": "Deprecated: use CloudRunConfig instead (same behavior).",
           "$ref": "ServerlessConfig"
+        },
+        "cloudRunConfig": {
+          "description": "Configuration for the Cloud Run addon. The `IstioConfig` addon must be\nenabled in order to enable Cloud Run. This option can only be enabled at\ncluster creation time.",
+          "$ref": "CloudRunConfig"
         }
       }
     },
@@ -792,6 +800,17 @@
         }
       }
     },
+    "CloudRunConfig": {
+      "id": "CloudRunConfig",
+      "description": "Configuration options for the Cloud Run feature.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Whether Cloud Run is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
     "NodePool": {
       "id": "NodePool",
       "description": "NodePool contains the name and configuration for a cluster's node pool.\nNode pools are a set of nodes (i.e. VM's), with a common configuration and\nspecification, under the control of the cluster master. They may have a set\nof Kubernetes labels applied to them, which may be used to reference them\nduring pod scheduling. They may also be resized up or down, to accommodate\nthe workload.",
@@ -869,6 +888,10 @@
           "items": {
             "$ref": "StatusCondition"
           }
+        },
+        "resourceVersion": {
+          "description": "Server-defined resource version (etag).",
+          "type": "string"
         }
       }
     },
@@ -952,16 +975,18 @@
           "description": "Machine-friendly representation of the condition",
           "enumDescriptions": [
             "UNKNOWN indicates a generic condition.",
-            "GCE_STOCKOUT indicates a GCE stockout.",
+            "GCE_STOCKOUT indicates a Google Compute Engine stockout.",
             "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.",
-            "GCE quota was exceeded.\nMore codes TBA"
+            "Google Compute Engine quota was exceeded.",
+            "Cluster state was manually changed by an SRE due to a system logic error.\nMore codes TBA"
           ],
           "type": "string",
           "enum": [
             "UNKNOWN",
             "GCE_STOCKOUT",
             "GKE_SERVICE_ACCOUNT_DELETED",
-            "GCE_QUOTA_EXCEEDED"
+            "GCE_QUOTA_EXCEEDED",
+            "SET_BY_OPERATOR"
           ]
         },
         "message": {
@@ -1058,8 +1083,12 @@
           "type": "boolean"
         },
         "tpuIpv4CidrBlock": {
-          "description": "The IP address range of the Cloud TPUs in this cluster. If unspecified, a\nrange will be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nUnspecified to have a range chosen with the default size `\/20`.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "description": "The IP address range of the Cloud TPUs in this cluster. If unspecified, a\nrange will be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true, and it must\nnot be specified when the `tpu_use_service_networking` is `true`.\n\nUnspecified to have a range chosen with the default size `\/20`.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
           "type": "string"
+        },
+        "tpuUseServiceNetworking": {
+          "description": "Enable Cloud TPU's Service Networking mode. In this mode, the CIDR blocks\nused by the Cloud TPUs will be allocated and managed by Service Networking,\ninstead of GKE.\n\nThis field must be `false` when `tpu_ipv4_cidr_block` is specified.",
+          "type": "boolean"
         }
       }
     },
@@ -1225,6 +1254,10 @@
         "enableCloudNat": {
           "description": "Whether GKE Cloud NAT is enabled for this cluster. Requires that the\ncluster has already set IPAllocationPolicy.use_ip_aliases to true.",
           "type": "boolean"
+        },
+        "enablePrivateIpv6Access": {
+          "description": "Whether or not Private IPv6 access is enabled. This enables direct\nconnectivity from GKE pods to Google Cloud services over gRPC.",
+          "type": "boolean"
         }
       }
     },
@@ -1236,6 +1269,10 @@
         "enabled": {
           "description": "Enable the use of GCP IAM Service Accounts in applications in this cluster.",
           "type": "boolean"
+        },
+        "federatingServiceAccount": {
+          "description": "Email of the federating GCP SA that has permission to act on behalf of\ncustomer SAs through Managed Pod Identity.",
+          "type": "string"
         }
       }
     },
@@ -1247,6 +1284,10 @@
         "bigqueryDestination": {
           "description": "Configuration to use BigQuery as usage export destination.",
           "$ref": "BigQueryDestination"
+        },
+        "enableNetworkEgressMetering": {
+          "description": "Whether to enable network egress metering for this cluster. If enabled, a\ndaemonset will be created in the cluster to meter network egress traffic.",
+          "type": "boolean"
         }
       }
     },
@@ -1589,6 +1630,10 @@
           "description": "A description of the update.",
           "$ref": "ClusterUpdate"
         },
+        "updatedCluster": {
+          "description": "The updated cluster object.\nThis field must be empty if 'update' is set.",
+          "$ref": "Cluster"
+        },
         "name": {
           "description": "The name (project, location, cluster) of the cluster to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
@@ -1625,7 +1670,7 @@
           "$ref": "NodePoolAutoscaling"
         },
         "desiredLocations": {
-          "description": "The desired list of Google Compute Engine\n[locations](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located. Changing the locations a cluster is in will result\nin nodes being either created or removed from the cluster, depending on\nwhether locations are being added or removed.\n\nThis list must always include the cluster's primary zone.",
+          "description": "The desired list of Google Compute Engine\n[zones](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located. Changing the locations a cluster is in will result\nin nodes being either created or removed from the cluster, depending on\nwhether locations are being added or removed.\n\nThis list must always include the cluster's primary zone.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1676,6 +1721,10 @@
           "description": "The desired status of Cloud NAT for this cluster.",
           "$ref": "CloudNatStatus"
         },
+        "desiredPrivateIpv6Access": {
+          "description": "The desired status of Private IPv6 access for this cluster.",
+          "$ref": "PrivateIPv6Status"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
@@ -1701,6 +1750,17 @@
       "properties": {
         "enabled": {
           "description": "Enables Cloud Nat on this cluster.\n\nOn an update if update.desired_cloud_nat_status.enabled = true,\nThe API will check if any Routers in the cluster's network has Cloud NAT\nenabled on the pod range.\n  a. If so, then the cluster nodes will be updated to not perform SNAT.\n  b. If no NAT configuration exists, a new Router with Cloud NAT on\n     the secondary range will be created first, and then the nodes will be\n     updated to no longer do SNAT.",
+          "type": "boolean"
+        }
+      }
+    },
+    "PrivateIPv6Status": {
+      "id": "PrivateIPv6Status",
+      "description": "PrivateIPv6Status contains the desired state of the IPv6 fast path\non this cluster. Private IPv6 access allows direct high speed communication\nfrom GKE pods to gRPC Google cloud services over IPv6.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enables private IPv6 access to Google cloud services for this cluster.",
           "type": "boolean"
         }
       }
@@ -1741,6 +1801,10 @@
         "imageProject": {
           "description": "The project containing the desired image to use for this node pool.\nThis is used to create clusters using a custom image.",
           "type": "string"
+        },
+        "updatedNodePool": {
+          "description": "The updated node pool object.\nThis field must be empty if 'node_version' or 'image_type' is set.",
+          "$ref": "NodePool"
         },
         "name": {
           "description": "The name (project, location, cluster, node pool) of the node pool to\nupdate. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -1878,7 +1942,7 @@
           "type": "string"
         },
         "locations": {
-          "description": "The desired list of Google Compute Engine\n[locations](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located. Changing the locations a cluster is in will result\nin nodes being either created or removed from the cluster, depending on\nwhether locations are being added or removed.\n\nThis list must always include the cluster's primary zone.",
+          "description": "The desired list of Google Compute Engine\n[zones](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located. Changing the locations a cluster is in will result\nin nodes being either created or removed from the cluster, depending on\nwhether locations are being added or removed.\n\nThis list must always include the cluster's primary zone.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2057,6 +2121,56 @@
           "type": "array",
           "items": {
             "$ref": "NodePool"
+          }
+        }
+      }
+    },
+    "GetOpenIDConfigurationResponse": {
+      "id": "GetOpenIDConfigurationResponse",
+      "description": "GetOpenIDConfigurationResponse is an OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.",
+      "type": "object",
+      "properties": {
+        "issuer": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "jwksUri": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "responseTypesSupported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "subjectTypesSupported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "idTokenSigningAlgValuesSupported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "claimsSupported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "grantTypes": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -3481,6 +3595,35 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Sets the size for a specific node pool."
+                    }
+                  }
+                },
+                "well-known": {
+                  "methods": {
+                    "getOpenid-configuration": {
+                      "id": "container.projects.locations.clusters.well-known.getOpenid-configuration",
+                      "path": "v1alpha1/{+parent}/well-known/openid-configuration",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/well-known/openid-configuration",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "The parent (project, location, cluster id) where the node pools will be\nlisted. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GetOpenIDConfigurationResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "GetOpenIDConfiguration gets the OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.\nhttps:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html"
                     }
                   }
                 }
