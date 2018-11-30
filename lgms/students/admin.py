@@ -16,7 +16,7 @@ from django.db.models import Avg, Max, Sum, Min
 
 ## end of flatpagetest
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser,Faculty, GradeYear, Subjects, CharacterBuildingActivities, Students, PresentCondition, IllnessInfo, HospitalInfo,AccidentInfo, ImmunisationInfo, StudentGrades, ObservationLists, CharacterObservation, StatementAccount, Compute
+from .models import CustomUser,Faculty, GradeGroup, Subjects, CharacterBuildingActivities, Students, PresentCondition, IllnessInfo, HospitalInfo,AccidentInfo, ImmunisationInfo, StudentGrades, ObservationLists, CharacterObservation, StatementAccount, Compute
 # Register your models here.
 
 admin.site.site_header = 'Learning Garden Montessori Administration'
@@ -58,7 +58,7 @@ UserAdmin.add_fieldsets = (
 
 # FOR STUDENT BIO IN PROFILE
 class StudentBioAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'studentname','momsname', 'popsname', 'guardiansname', 'gradeyear', 'financialinfo']
+    list_display = ['id', 'user', 'studentname','momsname', 'popsname', 'guardiansname', 'gradegroup', 'financialinfo']
     search_fields = ['studentname__studentname']
     list_filter = ['gradeyear']
     #fields = ['user','studentname', 'momsname', 'popsname', 'guardiansname', 'gradeyear', 'teachersname', 'subjects', 'charactersets']
@@ -78,12 +78,22 @@ class StudentBioAdmin(admin.ModelAdmin):
 #     fields = ['mothersname', 'fathersname', 'guardiansname', 'address', 'email', 'mobilenumber' ]
 
 
+
+
 class FacultyAdmin(admin.ModelAdmin):
     list_display = ['facultyname', 'email', 'faculty_id', 'birthday', 'rolegroup']
+
+
+class GradeGroupAdmin(admin.ModelAdmin):
+    list_display = ['gradename', 'gradedesc']
+    fields = ['gradename', 'gradedesc']
 
 class StudentsAdmin(admin.ModelAdmin):
     list_display = ['id', 'studentname', 'student_id', 'birthday', 'lrn_no', 'groupinfo']
     search_fields = ['studentname__studentname']
+
+
+
 
 class StudentGradesAdmin(admin.ModelAdmin):
     list_display = ['studentname', 'facultyname', 'subjectname', 'grades', 'dateperiod']
@@ -172,7 +182,7 @@ admin.site.register(StatementAccount, StatementAccountAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
 # admin.site.register(ParentsInfo, ParentsInfoAdmin)
 admin.site.register(Faculty, FacultyAdmin)
-admin.site.register(GradeYear)
+admin.site.register(GradeGroup)
 admin.site.register(Subjects)
 admin.site.register(CharacterBuildingActivities)
 
@@ -189,42 +199,3 @@ admin.site.register(StudentGrades, StudentGradesAdmin)
 admin.site.register(ObservationLists)
 admin.site.register(CharacterObservation, CharacterObservationAdmin)
 # admin.site.register(AssessmentStudents)
-
-
-#admin.site.register(GuidelinesTraits)
-#admin.site.register(Children)
-# admin.site.register(StudentBio)
-
-
-#test for adding subjects in line
-# class SubjectsInline(admin.StackedInline):
-#     model = StudentBio.subjects.through
-#
-# class StudentBioAdmin(admin.ModelAdmin):
-#     inlines = [
-#         SubjectsInline,
-#     ]
-#
-# class StudentBioAdmin(admin.ModelAdmin):
-#     inlines =[
-#         SubjectsInline,
-#     ]
-#
-# class CharactersetsInline(admin.StackedInline):
-#     model = StudentBio.charactersets.through
-
-#test for adding subjects in line
-
-
-# class FlatPageAdmin(FlatPageAdmin):
-#     fieldsets = (
-#         (None, {'fields' : ('url', 'title', 'content', 'sites')})
-#         (_('Advanced options'),{
-#             'classes': ('collapse',),
-#             'fields':(
-#                 'enable_comments',
-#                 'registration_required',
-#                 'template_name',
-#             ),
-#         }),
-#     )

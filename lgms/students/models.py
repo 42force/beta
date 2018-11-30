@@ -75,7 +75,7 @@ class CustomUser(AbstractUser):
 
     # def add_view()
     def __str__(self):
-        return '%s' % (self.name)
+        return '%s' % (self.username)
 
     class Meta:
         verbose_name_plural = "Users Information"
@@ -142,7 +142,7 @@ class Students(models.Model):
     groupinfo = models.CharField(max_length=64, choices=groupchoice, blank=True, default='CASA AM', help_text="Choose Group for Students")
 
     class Meta:
-        verbose_name_plural = 'Student Lists'
+        verbose_name_plural = 'Student Information'
 
     def __str__(self):
         return '%s' % (self.studentname)
@@ -164,17 +164,17 @@ class Faculty(models.Model):
         verbose_name_plural = 'Teachers Info'
 
     def __str__(self):
-        return '%s with CODE ID: %s' % (self.teachersname, self.teachers_id)
+        return '%s with CODE ID: %s' % (self.facultyname, self.email)
 
-class GradeYear(models.Model):
-    year = models.CharField('Grade Year', blank=True, max_length=30)
-
+class GradeGroup(models.Model):
+    gradename = models.CharField('Grade Year', blank=True, max_length=30)
+    gradedesc = models.CharField('Grade Description', blank=True, max_length=64)
 
     class Meta:
-        verbose_name_plural = 'Student Grade Year Lists'
+        verbose_name_plural = 'LGMS Grade Year'
 
     def __str__(self):
-        return '%s' % (self.year)
+        return '%s %s' % (self.gradename, self.gradedesc)
 
 
 class Subjects(models.Model):
@@ -462,7 +462,7 @@ class CharacterObservation(models.Model):
 
 class StatementAccount(models.Model):
         studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, verbose_name="Student Name DB")
-        gradeyear = models.ForeignKey('GradeYear', max_length=30, on_delete=models.CASCADE, related_name="statement_gradeyear", verbose_name="Grade Year")
+        gradeyear = models.ForeignKey('GradeGroup', max_length=30, on_delete=models.CASCADE, related_name="statement_gradegroup", verbose_name="Grade Year")
         term = {
             ('A', 'ANNUAL'),
             ('SA', 'SEMI-ANNUAL'),

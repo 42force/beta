@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from students.views import StudentBioList, IllnessInfoCreate, IllnessInfoUpdate, IllnessInfoDelete, PresentConditionCreate, PresentConditionUpdate, PresentConditionDelete, HospitalInfoCreate, HospitalInfoUpdate, HospitalInfoDelete, AccidentInfoCreate, AccidentInfoUpdate, AccidentInfoDelete, ImmunisationInfoCreate, ImmunisationInfoUpdate, ImmunisationInfoDelete
 
@@ -10,7 +10,8 @@ from django.conf.urls.static import static
 from . import views
 from django.contrib.auth import views as auth_views
 
-from django.conf.urls import url
+##this is where we add the views added
+from . addviews import parents, teachers
 #name can be used for reverse function
 # commented out from airline example
 # path("<int:flight_id>", views.flight, name="flight"),
@@ -19,6 +20,15 @@ from django.conf.urls import url
 # http://127.0.0.1:8000/home/8/
 
 urlpatterns = [
+
+     path('teachers/', include(([
+        path('', teachers.TeachersView.as_view(), name='teacherspage'),
+    ], 'students'), namespace='teachers')),
+
+
+    path('parents/', include(([
+        path('', parents.ParentsView.as_view(), name="parentspage"),
+    ], 'students'), namespace='parents')),
 
     #test for the downloadview
     #test for the downloadview
