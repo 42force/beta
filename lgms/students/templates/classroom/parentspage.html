@@ -1,0 +1,42 @@
+<!-- templates/home.html-->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active" aria-current="page">My profile</li>
+  </ol>
+</nav>
+<h2 class="mb-3">My Kids</h2>
+<a href="{% url 'parents:kids_list' %}" class="btn btn-primary mb-3" role="button">Add students</a>
+<div class="card">
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>Quiz</th>
+        <th>Subject</th>
+        <th>Questions</th>
+        <th>Taken</th>
+        <th></th>
+      </tr>
+    </thead>
+    <!-- this is the context name  -->
+    <tbody>
+      {% for owners in owner %}
+      <tr>
+        <td class="align-middle"><a href="{% url 'parents:kids_chandge' quiz.pk %}">{{ owner.name }}</a></td>
+        <td class="text-right">
+
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td class="bg-light text-center font-italic" colspan="5">You haven't added any kids yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

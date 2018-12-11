@@ -15,7 +15,7 @@ def parents_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, log
         )
     if function:
             return actual_decorator(function)
-            return actual_decorator
+    return actual_decorator
 
 
 
@@ -32,4 +32,4 @@ def teacher_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, log
         )
     if function:
         return actual_decorator(function)
-        return actual_decorator
+    return actual_decorator

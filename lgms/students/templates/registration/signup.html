@@ -18,38 +18,17 @@ NO NEED FOR THIS FORM IS USING CRISPY FORMS
 
     <h1 class="display-2 text-center">Register Online</h1>
   </div>
-  <div class="row justify-content-md-center">
-    <form method="post">
-      {%csrf_token%}
-      <div class="row">
-        <div class="col-6">
-          {{ form.email | as_crispy_field}}
-        </div>
-        <div class="col-6">
-          {{ form.password | as_crispy_field}}
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-6">
-          {{ form.first_name | as_crispy_field}}
-        </div>
-        <div class="col-6">
-          {{ form.last_name | as_crispy_field}}
-        </div>
 
-      </div>
-      {{ form.address   | as_crispy_field}}
-      {{ form.email     | as_crispy_field}}
-      {{ form.mobilenumber | as_crispy_field}}
-      {{ form.homenumber    | as_crispy_field }}
-      {{ form.civilstatus   | as_crispy_field}}
-      {{ form.religion      | as_crispy_field}}
-      <div class="g-recaptcha" data-sitekey="6Lc2XX0UAAAAAJ-FWpEsjpMeCXo0BvjqQIVuvuEE"></div>
-      <br>
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">SUBMIT</button>
+  <div class="row justify-content-center">
+    <form method="post" novalidate>
+      <h2> {{ user_type }} Online Form</h2>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      {{ form|crispy }}
+      <button type="submit" class="btn btn-success">Sign up</button>
     </form>
-  </div>
 
+  </div>
   <hr class="featurette-divider">
 </div>
 

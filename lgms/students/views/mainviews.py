@@ -13,8 +13,8 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth import login
 from django.contrib.auth.models import User
-from .models import Students, CustomUser, IllnessInfo, PresentCondition, HospitalInfo, ImmunisationInfo, AccidentInfo, Document
-from .forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm, PresentConditionForm, CustomUserForm, ParentsSignUpForm, TeacherSignUpForm
+from ..models import Students, CustomUser, IllnessInfo, PresentCondition, HospitalInfo, ImmunisationInfo, AccidentInfo, Document
+from ..forms import CustomUserCreationForm, EditProfileForm, CustomUserChangeForm, PresentConditionForm, CustomUserForm, ParentsSignUpForm, TeacherSignUpForm
 
 from django.contrib import messages
 
@@ -22,39 +22,34 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
+class SignUpView(TemplateView):
+    template_name = 'registration/signup.html'
 
-
-#
-# casa_url = CasaDownloadView.as_view()
-# forms_url = FormsDownloadView.as_view()
-#test decorator for nginx
-
-#################this is for the download ############################
-# import io
-# from django.http import FileResponse
-# from reportlab.pdfgen import canvas
-
-#############################################
 
 
 def home(request):
-    return render(request, "students/home.html")
+    if request.user.is_authenticated:
+        if request.user.is_parent:
+            return render(request, 'classroom/home.html')
+        else:
+            #this goes to parents view
+            return render(request, 'classroom/home.html')
+    #return render(request, 'classroom/home.html')
+
+#############################################
+
+#november 30 2018 modified this to separate the page
+# def home(request):
+#     if request.user.is_authenticated:
+#         if request.user.is_teacher:
+#             return redirect('students/parents/students_add_list.html')
+#         else:
+#             return redirect('students/teachers/teacherspage.html')
+#     return render(request, 'students/home.html')
+
+# def home(request):
+#     return render(request, "students/home.html")
 ##############flat pages url views code###############################
-def about(request):
-    return render(request, 'flatpages/about.html')
-
-def news(request):
-    return render(request, 'flatpages/news.html')
-
-def admission(request):
-    return render(request, 'flatpages/admission.html')
-
-def gallery(request):
-    return render(request, 'flatpages/gallery.html')
-
-
-def online(request):
-    return render(request, 'flatpages/online.html')
 ##############flat pages url views code###############################
 
 def slist(request):
@@ -84,27 +79,45 @@ def ucheck(request):
 
 def studentbioid(request, pk):
     try:
-        studentcheck = StudentBio.objects.get(pk=pk)
-        subjectlist = StudentBio.objects.filter(subjects__pk=pk)
+        studentcheck = Students.objects.get(pk=pk)
+        subjectlist = Students.objects.filter(subjects__pk=pk)
+        studentowner = Students.objects.filter(owner__pk=pk)
 
-    except StudentBio.DoesNotExist:
+    except Students.DoesNotExist:
         raise Http404("Student does not exist")
     context = {
         "studentcheck" : studentcheck,
-        "subjectlist" : subjectlist
+        "subjectlist" : subjectlist,
+        "studentowner" : studentowner
+         #need to remember to make it visible in urls.py
     }
     #return render(request, "students/.html", context)
     #original code
-    return render(request, "students/home.html", context)
+    return render(request, "classroom/home.html", context)
 
 
-class SignUp(generic.CreateView):
-    form_class = CustomUserCreationForm
-    #this is previously login.html but just a test
-    #will check if we can customise the login.html
-    success_url = reverse_lazy('login')
-    ##originally signup.html changed to home.html
-    template_name = 'signup.html'
+def studentmedpccheck(request, pk):
+    try:
+        studentmedpc = PresentCondition.objects.filter(owner__pk=pk)
+
+    except PresentCondition.DoesNotExist:
+        raise Http404("No Medical Reports")
+        
+    context = {
+        "studentmedpc" : studentmedpc
+    }
+    return render(request, "classroom/home.html", context)
+
+# class SignUp(generic.CreateView):
+#     form_class = CustomUserCreationForm
+#     #this is previously login.html but just a test
+#     #will check if we can customise the login.html
+#     #success_url = reverse_lazy('login') # nov.30, 2018 i removed the reverse_lazy for the meantime
+#     ##originally signup.html changed to home.html
+#     template_name = 'signup.html'
+
+
+
 
 
 #this signup_form and login_form not working
@@ -120,10 +133,9 @@ class SignUp(generic.CreateView):
 #     success_url = reverse_lazy('students/home')
 
 #@login_required
-class StudentBioList(ListView):
-    model = Students
-    paginate_by = 10
-
+# class StudentBioList(ListView):
+#     model = Students
+#     paginate_by = 10
 
 
 ############################## MEDICAL FORM ####################################
@@ -131,18 +143,20 @@ class StudentBioList(ListView):
 
 class PresentConditionCreate(CreateView):
     model = PresentCondition
-    fields = ['user', 'name', 'currentcondition', 'conditiondetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
+    fields = ['owner', 'studentname', 'currentcondition', 'conditiondetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
 
 
 class PresentConditionUpdate(UpdateView):
     model = PresentCondition
-    fields = ['user', 'name', 'currentcondition', 'conditiondetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
+    fields = ['owner', 'studentname', 'currentcondition', 'conditiondetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
 
 
 class PresentConditionDelete(DeleteView):
     model = PresentCondition
-    fields = ['user', 'name', 'currentcondition', 'conditiondetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
-    success_url = reverse_lazy('students/home')
+    fields = ['owner', 'studentname', 'currentcondition', 'conditiondetails', 'treatmentdetails', 'startperiodofillness', 'endperiodillness']
+    success_url = "/studentmedpccheck/{<int:pk>}/"
+
+
 ##############################ILLNESS FORM ####################################
 class IllnessInfoCreate(CreateView):
     model = IllnessInfo

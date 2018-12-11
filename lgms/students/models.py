@@ -19,12 +19,8 @@ from djmoney.models.validators import MaxMoneyValidator, MinMoneyValidator
 from django.db.models import Avg, Max, Sum, Min
 
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 
-
-
-
-class CustomUserManager(models.Manager):
-    pass
 
 
 
@@ -42,7 +38,9 @@ class CustomUser(AbstractUser):
     is_parent = models.BooleanField(default=False)
     is_teacher = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    username = models.CharField('Username', max_length=64, unique=True)
     first_name = models.CharField('First Name', blank=True, max_length=64)
+    email = models.EmailField(unique=True)
     last_name = models.CharField('Last Name', blank=True, max_length=64)
     address = models.CharField('Full Address', max_length=300, blank=True)
     dateofbirth = models.DateField('Date of Birth', default=date.today)
@@ -50,6 +48,7 @@ class CustomUser(AbstractUser):
     dateupdatedbio = models.DateTimeField('Date Updated', default=django.utils.timezone.now)
     mobilenumber = PhoneNumberField('Mobile Number',help_text='MOBILE FORMAT : +639178888888', blank=True)
     homenumber = PhoneNumberField('Landline Number', blank=True, help_text='landline : +6328888888')
+    profilepic = models.ImageField('Profile Picture',upload_to='profile_image', blank=True)
 
 
     civilstats = {
@@ -75,22 +74,25 @@ class CustomUser(AbstractUser):
 
     # def add_view()
     def __str__(self):
-        return '%s' % (self.username)
+        return '%s' % (self.email)
 
     class Meta:
-        verbose_name_plural = "Users Information"
+        proxy = True
+        app_label = 'auth'
+        verbose_name = _('LGMS User Database')
 
     class Meta:
         ordering = ['username']
 
 
-# remoed this for the meantime
+# commented for the meantime -- 01 dec 2018s
+#
+# def create_customuser(sender, **kwargs):
+#     if kwargs['created']:
+#         custom_userprofile = CustomUser.objects.create(user=kwargs['instance'])
+#
+# post_save.connect(create_customuser, sender=User)
 
-def create_customuser(sender, **kwargs):
-    if kwargs['created']:
-        custom_userprofile = CustomUser.objects.create(user=kwargs['instance'])
-
-post_save.connect(create_customuser, sender=User)
 
 # class ParentsInfo(models.Model):
 #     mothersname = models.ForeignKey('CustomUser', max_length=30, on_delete=models.CASCADE, related_name="customuser_fathersname", verbose_name="Mothers Name")
@@ -111,38 +113,16 @@ post_save.connect(create_customuser, sender=User)
 class Students(models.Model):
     owner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='students', default="")
     studentname = models.CharField('Student Name', max_length=64)
-    student_id = models.IntegerField('Student ID')
+    student_id = models.IntegerField('Student ID', blank=True, null=True)
     birthday = models.DateField('Date of Birth', default=date.today)
-    lrn_no = models.CharField('Learners Number', default="", max_length=64)
+    lrn_no = models.CharField('Learners Number', default="", max_length=64, blank=True)
     profilepic = models.ImageField('Profile Picture',upload_to='profile_image', blank=True)
-    subject = models.ForeignKey('Subjects', on_delete=models.CASCADE, related_name='subject', default="")
-    groupchoice = {
-
-        ('CASA AM', 'CM'),
-        ( 'TEACHAM', 'TEA'),
-        ( 'TEACHPM', 'TEP'),
-        ( 'TEACHPM GRADE1', 'TEP=GR1'),
-        ( 'TEACHPM GRADE2', 'TEP-GR2'),
-        ( 'TEACHPM GRADE3', 'TEP-GR3'),
-        ( 'PLAY GROUP', 'PG'),
-        ( 'CASA AFTERNOON 1:30', 'CA'),
-        ( 'GRADE1', 'G1'),
-        ( 'GRADE2', 'G2'),
-        ( 'GRADE3', 'G3'),
-        ( 'GRADE4', 'G4'),
-        ( 'GRADE5', 'G5'),
-        ( 'GRADE6', 'G6'),
-        ( 'GRADE7', 'G7'),
-        ( 'GRADE8', 'G8'),
-        ( 'GRADE9', 'G9'),
-        ( 'GRADE10', 'G10')
-
-
-    }
-    groupinfo = models.CharField(max_length=64, choices=groupchoice, blank=True, default='CASA AM', help_text="Choose Group for Students")
+    groupinfo = models.ForeignKey('GradeGroup', on_delete=models.CASCADE, help_text="Choose appropriate Group")
+    subjects = models.ManyToManyField('Subjects', help_text="Choose list of subjects")
+    character = models.ManyToManyField('CharacterBuildingActivities', help_text="Choose list of Characters appropriated", verbose_name="Character Traits")
 
     class Meta:
-        verbose_name_plural = 'Student Information'
+        verbose_name_plural = 'LGMS Students Information'
 
     def __str__(self):
         return '%s' % (self.studentname)
@@ -174,7 +154,7 @@ class GradeGroup(models.Model):
         verbose_name_plural = 'LGMS Grade Year'
 
     def __str__(self):
-        return '%s %s' % (self.gradename, self.gradedesc)
+        return '%s' % (self.gradename)
 
 
 class Subjects(models.Model):
@@ -183,8 +163,19 @@ class Subjects(models.Model):
 
     class Meta:
         verbose_name_plural = 'Subjects Lists Information'
+
+
     def __str__(self):
-        return '%s' % (self.subjectname)
+       return '%s' % (self.subjectname)
+
+    def get_html_badge(self):
+        name = escape(self.subjectname)
+        color = escape(self.color)
+        html = '<span class="badge badge-primary" style="background-color: %s">%s</span>' % (color, subjectname)
+        return mark_safe(html)
+
+    class Meta:
+        verbose_name_plural = 'LGMS Subject Lists'
 
 class CharacterBuildingActivities(models.Model):
     traitsname = models.CharField('Traits', max_length=64)
@@ -193,12 +184,12 @@ class CharacterBuildingActivities(models.Model):
         return '%s' % (self.traitsname)
 
     class Meta:
-        verbose_name_plural = 'Character Building Activities Traits Lists'
+        verbose_name_plural = 'LGMS Character Lists'
 
 
 class PresentCondition(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, max_length=64, on_delete=models.CASCADE, blank=False, null=True, verbose_name=" Parents Name ")
-    name = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE)
+    owner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='presentcondition', default="")
+    studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, default="")
     presentconditionchoices = {
         ('C', 'COLDS'),
         ('D', 'DIARRHEA'),
@@ -218,7 +209,7 @@ class PresentCondition(models.Model):
     endperiodillness = models.DateField('Date Ended', default=date.today)
 
     def __str__(self):
-        return '%s' % (self.name)
+        return '%s' % (self.studentname)
 
     def get_absolute_url(self):
         return reverse('studentbioid', kwargs={'pk' : self.pk})
@@ -230,8 +221,8 @@ class PresentCondition(models.Model):
 
 
 class IllnessInfo(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, max_length=64, on_delete=models.CASCADE, blank=False, null=True, verbose_name=" Parents Name ")
-    name = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE)
+    owner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='illnessinfo', default="")
+    studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, default="")
     illchoices = {
         ('A', 'Allergy'),
         ('ANE', 'Anemia'),
@@ -271,8 +262,8 @@ class IllnessInfo(models.Model):
 
 
 class HospitalInfo(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, max_length=64, on_delete=models.CASCADE, blank=False, null=True, verbose_name=" Parents Name ")
-    name = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE)
+    owner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='hospitalinfo', default="")
+    studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, default="")
     reasonforhospital = models.CharField('Reason for Hospitalisation', max_length=64)
     hospitalisationdetails = models.TextField('Hospitalization Details', max_length=300)
     treatmentdetails = models.CharField('Treatment Details', max_length=64, help_text="If under treatment, please indicate dosage of drug")
@@ -280,7 +271,7 @@ class HospitalInfo(models.Model):
     endperiodillness = models.DateField('Date Ended', default=date.today)
 
     def __str__(self):
-        return '%s' % (self.name)
+        return '%s' % (self.studentname)
 
         def get_absolute_url(self):
             return reverse('studentbioid', kwargs={'pk' : self.pk})
@@ -298,7 +289,7 @@ class AccidentInfo(models.Model):
     endperiodillness = models.DateField('Date Ended', default=date.today)
 
     def __str__(self):
-        return '%s' % (self.name)
+        return '%s' % (self.user)
 
         def get_absolute_url(self):
             return reverse('studentbioid', kwargs={'pk' : self.pk})
@@ -441,7 +432,7 @@ class ObservationLists(models.Model):
         return '%s' % (self.traitsname)
 
     class Meta:
-        verbose_name_plural = "PAGUNLAD LISTS"
+        verbose_name_plural = "LGMS PAGUNLAD LISTS"
 
 class CharacterObservation(models.Model):
     studentname = models.ForeignKey('Students', max_length=64, on_delete=models.CASCADE, verbose_name="Student Name")
@@ -451,7 +442,7 @@ class CharacterObservation(models.Model):
 
 
     class Meta:
-        verbose_name_plural = "PAGUNLAD SA TAGLAY NA MGA PAGPAPAHALAGA AT SALOOBIN LISTS"
+        verbose_name_plural = "LGMS PAGUNLAD SA TAGLAY NA MGA PAGPAPAHALAGA AT SALOOBIN LISTS"
 
 
 # class TestRating(AbstractBaseRating):

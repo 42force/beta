@@ -1,0 +1,28 @@
+{% extends 'profile.html'%}
+{% load crispy_forms_tags %}}
+
+
+{% block content%}
+<!-- this is for the kids form testing only -->
+<div class="container-marketing">
+  <hr class="featurette-divider">
+
+  <div class="row justify-content-center">
+    <div class="row">
+      <h2>Add your Kids Information here</h2>
+      <div class="col-md-6 col-sm-8 col-12">
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-success">Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <hr class="featurette-divider">
+
+
+  <!-- this is for the kids form testing only -->
+
+  {% endblock %}

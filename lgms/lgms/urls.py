@@ -18,18 +18,27 @@ from django.urls import path, include
 from django.views.generic.base import TemplateView
 from students.admin import students_admin_site
 #this is the views page additional
-from students.addviews import teachers, parents
-
+from students.views import mainviews, teachers, parents
 #apps stay here for url
 
 urlpatterns = [
 
     path('', TemplateView.as_view(template_name='flatpages/about.html'), name='about'),
+    path('', TemplateView.as_view(template_name='flatpages/gallery.html'), name='gallery'),
+    path('', TemplateView.as_view(template_name='flatpages/admission.html'), name='admission'),
+    path('', TemplateView.as_view(template_name='flatpages/calendar.html'), name='calendar'),
+    path('', TemplateView.as_view(template_name='flatpages/careers.html'), name='careers'),
+    path('', TemplateView.as_view(template_name='flatpages/news.html'), name='news'),
+    path('', TemplateView.as_view(template_name='flatpages/online.html'), name='online'),
+    #path('', TemplateView.as_view(template_name='students/home.html'), name='home'), # new
+
+
     #path('', TemplateView.as_view(template_name='students/home.html'), name='home'),
     path('admin/', admin.site.urls),
     path('students-admin', students_admin_site.urls),
     path('', include('students.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/signup/', mainviews.SignUpView.as_view(), name='signup'),
     path('accounts/signup/parents', parents.ParentsView.as_view(), name="parentsview" ),
     path('accounts/signup/teacher', teachers.TeachersView.as_view(), name="teachersview"),
     path('pages/', include('django.contrib.flatpages.urls')),
