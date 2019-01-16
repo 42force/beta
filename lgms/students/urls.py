@@ -28,8 +28,6 @@ urlpatterns = [
     path('home/<int:pk>/', mainviews.studentmedpccheck, name="studentmedpccheck"),
 
 
-
-
     path('teachers/', include(([
         path('testonlyteacher', teachers.TeachersInfoView.as_view(), name='teachers_page'),
         path('addsubjects/', teachers.SubjectsTaughtView.as_view(), name='subject_handled'),
@@ -42,7 +40,6 @@ urlpatterns = [
         path('students/<int:pk>/', parents.StudentsDetailView.as_view(), name='students_details'),
         path('add/', parents.StudentsCreateView.as_view(), name='kids_list'),
     ], 'students'), namespace='parents')),
-
 
 
 
@@ -87,36 +84,35 @@ urlpatterns = [
         path('immunisationinfo/<int:pk>/delete/', mainviews.ImmunisationInfoDelete.as_view(), name='immunisationinfo-delete'),
     ], 'students'), namespace='mainviews')),
 
-    #test for the downloadview
-    #test for the downloadview
-    #path('signup/', views.SignUp.as_view(), name='signup'),
 
-    #experiment of putting login to home.html
-    #path('accounts/login', auth_views.LoginView.as_view(template_name='students/home.html')),
 
-    #this is a test for customising direction for login and signup form
-    #path('home', views.login_form, name='login_form'),
-    #path('home', views.signup_form, name='signup_form'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-    # path('signup/parents/', views.StudentSignupView.as_view(), name='signup_parents'),
-    # path('signup/teachers/', views.TeachersSignupView.as_view(), name='signup_teachers'),
-    #this is for flapages url start
 
-    #this is for flapages url end
-    #this is for the download part
-    #this is for flapages url end
+#test for the downloadview
+#test for the downloadview
+#path('signup/', views.SignUp.as_view(), name='signup'),
+
+#experiment of putting login to home.html
+#path('accounts/login', auth_views.LoginView.as_view(template_name='students/home.html')),
+
+#this is a test for customising direction for login and signup form
+#path('home', views.login_form, name='login_form'),
+#path('home', views.signup_form, name='signup_form'),
+
+# path('signup/parents/', views.StudentSignupView.as_view(), name='signup_parents'),
+# path('signup/teachers/', views.TeachersSignupView.as_view(), name='signup_teachers'),
+#this is for flapages url start
+
+#this is for flapages url end
+#this is for the download part
+#this is for flapages url end
 
 ###this is a test for signup##########
 
 
 
 ######signup test####################
-
-
-
-
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
 
 #this is for home
     #path("studentbio/<int:pk>", views.student, name="student"),
