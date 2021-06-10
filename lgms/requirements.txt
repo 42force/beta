@@ -9,7 +9,7 @@ chardet==3.0.4
 cryptography==2.3
 cssselect2==0.2.1
 defusedxml==0.5.0
-Django==2.0.6
+Django==2.2.24
 django-admin-easy==0.4.1
 django-braces==1.13.0
 django-crispy-forms==1.7.2
